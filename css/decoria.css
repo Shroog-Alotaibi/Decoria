@@ -1,11 +1,9 @@
 /* =========================================
-   DECORIA THEME - PERFECT CENTER HEADER (FINAL)
+   DECORIA THEME - CENTERED HEADER (FINAL)
    ========================================= */
 
-/* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Tajawal:wght@400;500;700&display=swap');
 
-/* Palette */
 :root {
   --bg: #f8f5ee;
   --brand: #3b4d3b;
@@ -13,10 +11,12 @@
   --text: #2e2a23;
   --muted: #6f6a60;
   --card: #ffffff;
+  --primary-btn: #3b4d3b;
+  --primary-btn-hover: #2c3e2f;
 }
 
-/* ===== Base ===== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -24,6 +24,7 @@ body {
   line-height: 1.7;
   overflow-x: hidden;
 }
+
 .container { max-width: 1200px; margin: auto; padding: 20px; }
 
 /* ===== Header ===== */
@@ -36,15 +37,22 @@ body {
   z-index: 1000;
 }
 
+/* ===== HEADER LAYOUT ===== */
 .header-container {
-  display: grid;
-  grid-template-columns: auto 1fr auto; /* شعار - نص - زر */
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 25px;
+  position: relative;
 }
 
-/* Brand / Logo */
-.brand { display: flex; align-items: center; gap: 14px; }
+/* ===== Logo (Right) ===== */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  order: 1;
+}
 .logo {
   height: 110px;
   width: auto;
@@ -64,27 +72,22 @@ body {
 }
 .brand-tag { margin: 0; color: var(--muted); font-size: 15px; }
 
-/* ===== Perfectly Centered Welcome Text ===== */
-/* ===== Welcome text perfectly centered and stable ===== */
+/* ===== Centered Welcome Text ===== */
 .welcome-text {
   font-family: 'Playfair Display', serif;
   font-size: 22px;
   font-weight: 700;
   color: var(--brand);
-  text-align: center;
-  
-  /* هذي تضمن إنها تجي بالنص بالضبط */
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  
-  white-space: nowrap; /* يمنعها تنكسر لسطرين */
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
-
-/* ===== Menu Button ===== */
-.header-buttons { justify-self: end; }
+/* ===== Menu (Left) ===== */
+.header-buttons {
+  order: 2;
+}
 .menu-toggle {
   font-size: 28px;
   color: var(--text);
@@ -93,7 +96,10 @@ body {
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
 }
-.menu-toggle:hover { transform: rotate(90deg); color: var(--brand); }
+.menu-toggle:hover {
+  transform: rotate(90deg);
+  color: var(--brand);
+}
 
 /* ===== Sidebar ===== */
 .sidebar {
@@ -131,7 +137,6 @@ body {
 }
 .close-btn:hover { color: var(--brand); transform: rotate(90deg); }
 
-/* Overlay */
 #overlay {
   position: fixed;
   top: 0; left: 0;
@@ -144,7 +149,6 @@ body {
 }
 #overlay.active { opacity: 1; visibility: visible; }
 
-/* Logout pinned to bottom */
 .sidebar hr {
   margin-top: auto;
   border: none;
@@ -163,33 +167,26 @@ body {
 .sidebar .logout:hover { color: #ff3b3b; }
 
 /* ===== Footer ===== */
-
 .footer-image {
-  width: 100%;  
-  max-width: 100%; 
-  height: 250px;  
-  object-fit: cover; 
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
   display: block;
   margin: 0 auto;
 }
-
 .footer-content {
   position: relative;
-  text-align: center; 
+  text-align: center;
 }
-
 .footer-text {
   position: absolute;
-   bottom: 20px; 
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  color: rgb(218, 218, 218); 
+  color: rgb(218, 218, 218);
   font-size: 16px;
   z-index: 10;
 }
-
-
-
 
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar { width: 10px; }
@@ -199,6 +196,6 @@ body {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .header-container { grid-template-columns: 1fr auto; }
-  .welcome-text { font-size: 18px; }
+  .header-container { flex-direction: row-reverse; justify-content: space-between; }
+  .welcome-text { font-size: 18px; position: static; transform: none; text-align: center; }
 }

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DECORIA | Settings</title>
+
+  <!-- CSS links -->
+  <link rel="stylesheet" href="../css/decoria.css" />
+  <link rel="stylesheet" href="../css/designers.css" />
+  <link rel="stylesheet" href="../css/settings.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="brand">
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+      </div>
+
+      <p class="welcome-text">Welcome to DECORIA</p>
+
+      <div class="header-buttons">
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+    <a href="home.html">Home</a>
+    <a href="designers.html" class="active">Designers</a>
+    <a href="bookings.html">Bookings</a>
+    <a href="about.html">About</a>
+    <a href="#">My Account</a>
+     <a href="settings.html">Settings</a>
+    <hr>
+    <a href="#" class="logout">Logout</a>
+  </div>
+
+  <div id="overlay"></div>
+
+  <!-- Main -->
+  <main class="container">
+    <h2 class="section-title">Settings</h2>
+    <main class="settings-page">
+    <!-- Personal Information Card (Read-Only) -->
+    <section class="card">
+      <h2>Personal Information</h2>
+      <div class="account-info-item">
+        <span>Name:</span>
+        <span>Ahmed Saleh</span>
+      </div>
+      <div class="account-info-item">
+        <span>Email:</span>
+        <span>Ahmed12345@gmail.com</span>
+      </div>
+      <div class="account-info-item">
+        <span>Phone Number:</span>
+        <span>+966 555 123 456</span>
+      </div>
+      <div class="account-info-item">
+        <span>Date of Birth:</span>
+        <span>December 24, 1998</span>
+      </div>
+      <div class="account-info-item">
+        <span>Gender:</span>
+        <span>Male</span>
+      </div>
+      <div class="account-info-item">
+        <span>Address:</span>
+        <span>Riyadh, Saudi Arabia</span>
+      </div>
+    </section>
+
+    <!-- Personal Account Settings Card -->
+    <section class="card">
+      <h2>Personal Account Settings</h2>
+      <div class="account-info-item">
+        <label id="username" for="username" style="text-align: left;">Username:</label>
+        <span id="username">srde_98978</span>
+      </div>
+      <div class="account-info-item">
+        <label for="email">Email:</label>
+        <span id="email">Ahmed12345@gmail.com</span>
+      </div>
+      <div class="account-info-item">
+        <label for="phone">Phone Number:</label>
+        <span id="phone">+966 555 123 456</span>
+      </div>
+
+      <div class="account-info-item">
+        <label for="phone">Password:</label>
+        <span id="pass">********</span>
+      </div>
+
+      <button class="edit-info-btn" onclick="window.location.href='settings-personal.html'">Edit</button>
+    </section>
+
+    
+
+      
+    </section>
+</main>
+
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+  <div class="footer-content">
+    <p class="footer-text">© 2025 DECORIA — All rights reserved</p>
+    <img src="../photo/darlfooter.jpeg" alt="DECORIA Logo" class="footer-image">
+  </div>
+</footer>
+
+
+  <!-- JS -->
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/designers.js" defer></script>
+</body>
+</html>
