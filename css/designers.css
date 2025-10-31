@@ -100,3 +100,8 @@ main.container {
   border-color: var(--brand);
   box-shadow: 0 0 8px rgba(59, 77, 59, 0.25);
 }
+
+/* تعديل خاص لصورة أحمد فقط */
+.designer-avatar[src*="Ahmed"] {
+  object-position: 66% center; /* أو جربي 30% لو تبغين أكثر */
+}
