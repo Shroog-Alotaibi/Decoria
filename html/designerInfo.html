@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DECORIA — Designer Profile</title>
+
+  <!-- ثيم الموقع -->
+  <link rel="stylesheet" href="../css/decoria.css">
+  <!-- تنسيقات صفحة المصمم -->
+  <link rel="stylesheet" href="../css/designerInfo.css">
+</head>
+<body>
+
+  <!-- Header مطابق لصفحاتك المضبوطة -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="brand">
+        <!-- تأكدي من اسم ملف الشعار الصحيح (Logo.png أو Logo.png.png) -->
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+      </div>
+      <p class="welcome-text">Welcome to DECORIA</p>
+      <div class="header-buttons">
+        <button class="menu-toggle" aria-label="Open menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar يفتح من اليمين -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar" aria-label="Close menu">&times;</span>
+    <a href="home.html">Home</a>
+    <a href="designers.html" class="active">Designers</a>
+    <a href="bookings.html">Bookings</a>
+    <a href="about.html">About</a>
+    <a href="#">My Account</a>
+    <a href="settings.html">Settings</a>
+    <hr>
+    <a href="#" class="logout">Logout</a>
+  </div>
+  <div id="overlay"></div>
+
+  <main class="container">
+
+    <!-- بانر: الخلفية الثابتة (modren.jpg) خلف الاسم/الوظيفة مع شفافية خفيفة -->
+    <section class="profile-banner" id="profileBanner">
+      <a class="back-arrow" href="designers.html" title="Back to Designers">←</a>
+
+      <!-- لوجو المصمم -->
+      <img id="designerLogo" class="banner-logo" src="../photo/placeholder.png" alt="Designer Logo">
+
+      <!-- الكتلة التي نريد الخلفية خلفها -->
+      <div class="banner-head">
+        <h2 id="designerName" class="banner-name">Designer Name</h2>
+        <p id="designerRole" class="banner-role">Interior Designer — Riyadh</p>
+
+        <div class="banner-stats">
+          <div><strong id="reviewsCount">0</strong><br>Reviews</div>
+        </div>
+
+        <!-- LinkedIn (أيقونة فوق مع كلمة LinkedIn تحتها) -->
+        <div id="linkWrap" class="banner-link-wrap" hidden>
+          <a id="profileLink" class="banner-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn">↗</a>
+          <div class="banner-link-label">LinkedIn</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="designs">Designs</button>
+      <button class="tab" data-tab="review">Review</button>
+    </nav>
+
+    <!-- تصاميم (كروت + like) -->
+    <section id="designsSection" class="cards"></section>
+
+    <!-- ريفيو (أيقونة المجهول فقط + الاسم + النجوم + النص) -->
+    <section id="reviewsSection" class="reviews is-hidden">
+      <h3 class="reviews-title">Reviews</h3>
+      <div id="reviewsList" class="reviews-list"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p class="footer-text">© <span id="y"></span> DECORIA — All rights reserved</p>
+      <img src="../photo/darlfooter.jpeg" alt="DECORIA footer" class="footer-image">
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/designerInfo.js" defer></script>
+</body>
+</html>
