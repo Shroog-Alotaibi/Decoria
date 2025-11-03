@@ -207,3 +207,38 @@
 .like-btn.liked svg {
   color: #fff;
 }
+/* حجم الـSVG داخل زر لينكدإن الصغير */
+.banner-link svg { width: 18px; height: 18px; display: block; }
+
+
+/* حجم الـSVG داخل زر لينكدإن الصغير */
+.banner-link svg { width: 18px; height: 18px; display: block; }
+
+/* ستايل سطر البايو داخل نفس عنصر الدور */
+.banner-bio { font-size: 13px; color: #444; opacity: .9; }
+
+/* تمركز زر LinkedIn فوق الكلمة مباشرة */
+.banner-link-wrap{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px;
+  margin: 8px auto 0 !important;   /* يوسّطها أفقياً */
+  transform: none !important;       /* إلغاء الإزاحة القديمة */
+  text-align: center;
+}
+
+/* حجم الأيقونة داخل الدائرة يبقى صغير وأنيق */
+.banner-link svg{
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* تغميق سطر البايو وجعله أوضح */
+.banner-bio{
+  font-size: 14px;        /* أكبر شوي */
+  color: #1f2937;         /* أغمق */
+  font-weight: 600;       /* أكثر وضوح */
+  opacity: 1;             /* إزالة الخفّة */
+}

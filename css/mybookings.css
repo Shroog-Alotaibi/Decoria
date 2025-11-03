@@ -1,0 +1,142 @@
+.is-hidden { display: none !important; }
+
+/* تبويبان بالنص */
+.tabs-center{
+  display:flex; justify-content:center; align-items:center; gap:36px;
+  margin: 10px 0 4px;
+  user-select:none;
+}
+.tab-link{
+  position:relative;
+  font-weight:900;
+  color:#002766;
+  letter-spacing:.2px;
+  line-height:1;
+  cursor:pointer;          /* قابل للضغط */
+  outline: none;
+}
+.tab-link.is-active::after{
+  content:"";
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:-8px;
+  width: 140px; height: 8px;
+  border-radius: 8px;
+  background: #e0e6ed;     /* تضليل كبير تحت المختار */
+}
+
+/* عنوان كل قائمة */
+.orders-heading{
+  margin: 14px 0 8px 0;
+  color:#002766;
+  font-weight:900;
+}
+
+/* قائمة الطلبات */
+.orders{
+  display:flex; flex-direction:column; gap:16px;
+  margin-top:8px;
+}
+
+/* كرت الطلب */
+.order-card{
+  position: relative;
+  display:grid; grid-template-columns:120px 1fr; gap:14px;
+  background:#fff; border:1px solid var(--border); border-radius:16px;
+  padding:14px;
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
+}
+
+/* صورة الطلب + تغبيش خلفها */
+.order-thumb{
+  position:relative; width:120px; height:120px; border-radius:12px; overflow:hidden;
+  isolation:isolate;
+}
+.order-thumb::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image: var(--bg, none);
+  background-size: cover; background-position: center;
+  filter: blur(10px) saturate(0.9);
+  transform: scale(1.06);
+  opacity:.35;
+  z-index:0;
+}
+.order-thumb img{
+  position:relative; z-index:1;
+  width:100%; height:100%; object-fit:cover; border-radius:10px;
+  image-rendering: auto;
+}
+
+/* بيانات الطلب */
+.order-body{ display:flex; flex-direction:column; gap:6px; }
+.order-top{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.order-title{
+  margin:0; font-weight:800; color:#002766; letter-spacing:.2px;
+}
+.order-meta{
+  display:flex; flex-wrap:wrap; gap:12px; font-size:.92rem; color:#333;
+}
+.order-meta span{ opacity:.92; }
+
+/* شارات */
+.badge{
+  display:inline-block; font-size:.78rem; font-weight:700;
+  padding:.18rem .55rem; border-radius:999px; border:1px solid var(--border);
+}
+.badge-current{ background:#e6f4ff; color:#0958d9; border-color:#bae0ff; }
+.badge-history{ background:#f6ffed; color:#389e0d; border-color:#b7eb8f; }
+.badge-canceled{ background:#fff2f0; color:#cf1322; border-color:#ffccc7; }
+
+/* أزرار */
+.order-actions{ display:flex; align-items:center; gap:10px; }
+.btn{
+  border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.btn-cancel{ background:#fff1f0; color:#cf1322; border:1px solid #ffa39e; }
+.btn-cancel:hover{ background:#ffe2e0; }
+
+/* استجابة */
+@media (max-width: 560px){
+  .order-card{ grid-template-columns:1fr; }
+  .order-thumb{ width:100%; height:200px; }
+  .order-top{ align-items:flex-start; flex-direction:column; gap:6px; }
+}
+
+
+/* تأكيد أن الصفحة تمتد بكامل الارتفاع والفوتر يبقى أسفلها */
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main.container {
+  flex: 1; /* يخلي المحتوى ياخذ المساحة الباقية */
+}
+
+footer {
+  margin-top: auto; /* يخلي الفوتر دايمًا تحت */
+}
+
+
+
+/* إصلاح تمركز المربعات */
+main.container {
+  flex: 1;
+  display: block;         /* يلغي التمركز العمودي */
+  width: 100%;            /* يضمن امتداد المربعات بعرض الصفحة */
+}
+
+.orders {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;            /* تباعد متناسق بين الطلبات */
+  align-items: stretch;   /* يخلي المربعات بعرض الحاوية بالكامل */
+}
