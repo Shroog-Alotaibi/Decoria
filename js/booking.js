@@ -1,153 +1,109 @@
-// js/booking.js
-(function(){
-  'use strict';
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DECORIA | Booking</title>
 
-  const LS_KEY = 'decoria_bookings';
-  const byId = id => document.getElementById(id);
+  <!-- CSS links -->
+<link rel="stylesheet" href="decoria.css" />
+<link rel="stylesheet" href="booking.css" />
+</head>
+<body>
 
-  // تحميل الحجز من localStorage
-  function loadLS(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-    catch { return []; }
-  }
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="brand">
+        <img src="/photo/Logo.png" alt="DECORIA Logo" class="logo">
+      </div>
+      <p class="welcome-text">Book Your Designer</p>
+      <div class="header-buttons">
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
 
-  // حفظ الحجز في localStorage
-  function saveLS(arr){
-    localStorage.setItem(LS_KEY, JSON.stringify(arr));
-  }
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+    <a href="home.html">Home</a>
+    <a href="designers.html">Designers</a>
+    <a href="booking.html" class="active">Booking</a>
+    <a href="timeline.html">Timeline</a>
+    <a href="meeting.html">Meeting</a>
+    <a href="about.html">About</a>
+    <a href="#">My Account</a>
+    <a href="settings.html">Settings</a>
+    <hr>
+    <a href="#" class="logout">Logout</a>
+  </div>
 
-  // جلب بيانات المصممين
-  function getDesignersMap(){
-    return (window.DESIGNERS && typeof window.DESIGNERS === 'object') ? window.DESIGNERS : {};
-  }
+  <div id="overlay"></div>
 
-  // التحقق من تعارض المواعيد
-  function slotConflict(bookings, designerId, date, time){
-    return bookings.some(b => b.designerId === designerId && b.date === date && b.time === time && b.status !== 'cancelled');
-  }
+  <!-- Main Content -->
+  <main class="container">
+    <h2 class="section-title">Book Your Designer</h2>
 
-  function isoNow(){ return (new Date()).toISOString(); }
+    <form class="booking-form">
+	<!-- Client Name -->
+<label for="clientName">Your Name</label>
+<input type="text" id="clientName" placeholder="Enter your name" required>
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const sel = byId('designer');
-    const form = document.querySelector('.booking-form') || byId('bookingForm');
-    const dateInput = byId('date');
-    const timeInput = byId('time');
-    const paymentInput = byId('payment');
-    const nameInput = byId('clientName');
-    const confirmBtn = byId('confirmBooking');
+      <!-- Choose Designer -->
+      <label for="designer">Choose Designer:</label>
+      <select id="designer" required>
+        <option value="">Select a Designer</option>
+      </select>
 
-    const bookingDetails = byId('bookingDetails');
-    const detailName = byId('detailName');
-    const detailDate = byId('detailDate');
-    const detailTime = byId('detailTime');
+      <!-- Choose Date -->
+      <label for="date">Choose Date:</label>
+      <input type="date" id="date" required>
 
-    const editBtn = byId('editBooking');
-    const cancelBtn = byId('cancelBooking2');
-    const goTimelineBtn = byId('goTimeline');
+      <!-- Choose Time -->
+      <label for="time">Choose Time:</label>
+      <input type="time" id="time" required>
 
-    const designers = getDesignersMap();
+      <!-- Payment Method -->
+      <label for="payment">Payment Method:</label>
+      <select id="payment" required>
+        <option value="">Select Payment Method</option>
+        <option value="credit">Credit Card</option>
+        <option value="bank">Bank Transfer</option>
+        <option value="applepay">applepay</option>
+      </select>
 
-    // populate select
-    if(sel){
-      sel.innerHTML = `<option value="">Select a Designer</option>`;
-      Object.entries(designers).forEach(([id, info])=>{
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = info.name || id;
-        sel.appendChild(opt);
-      });
-    }
+     <div class="btn-row">
+  <button id="confirmBooking" class="primary-btn">Confirm Booking</button>
+</div>
 
-    // قراءة قيم الفورم
-    function readFormValues(){
-      return {
-        designerId: sel.value.trim(),
-        date: dateInput.value,
-        time: timeInput.value,
-        payment: paymentInput.value,
-        clientName: nameInput.value.trim() || 'Guest'
-      };
-    }
 
-    // عرض تفاصيل الحجز
-    function showBookingDetailsUI(booking){
-      detailName.textContent = booking.clientName;
-      detailDate.textContent = booking.date;
-      detailTime.textContent = booking.time;
-      form.style.display = 'none';
-      bookingDetails.style.display = 'block';
-    }
+<div id="bookingDetails" class="booking-message" style="display:none;">
+  <p>✅ Booking confirmed successfully!</p>
+  <p><strong>Name:</strong> <span id="detailName"></span></p>
+  <p><strong>Date:</strong> <span id="detailDate"></span></p>
+  <p><strong>Time:</strong> <span id="detailTime"></span></p>
 
-    // حفظ الحجز
-    function submitBooking(e){
-      if(e) e.preventDefault();
-      const vals = readFormValues();
+  <div class="btn-row">
+    <button id="editBooking" class="secondary-btn">Edit</button>
+    <button id="cancelBooking2" class="secondary-btn">Cancel</button>
+    <button id="goTimeline" class="primary-btn">Go to Timeline</button>
+  </div>
+</div>
+  </main>
 
-      if(!vals.designerId || !vals.date || !vals.time || !vals.clientName){
-        alert('Please fill all required fields.');
-        return;
-      }
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p class="footer-text">©️ 2025 DECORIA — All rights reserved</p>
+      <img src="/photo/darlfooter.jpeg" alt="DECORIA Logo" class="footer-image">
+    </div>
+  </footer>
 
-      const bookings = loadLS();
-
-      if(slotConflict(bookings, vals.designerId, vals.date, vals.time)){
-        if(!confirm('This slot is already booked. Continue anyway?')) return;
-      }
-
-      const newBooking = {
-        id: 'bk_' + Math.random().toString(36).slice(2,9),
-        designerId: vals.designerId,
-        designerName: (designers[vals.designerId] && designers[vals.designerId].name) || vals.designerId,
-        date: vals.date,
-        time: vals.time,
-        payment: vals.payment,
-        clientName: vals.clientName,
-        status: 'booked',
-        createdAt: isoNow()
-      };
-
-      bookings.push(newBooking);
-      saveLS(bookings);
-
-      alert('Booking confirmed ✅');
-      showBookingDetailsUI(newBooking);
-    }
-
-    // أحداث الفورم
-    form.addEventListener('submit', submitBooking);
-    if(confirmBtn) confirmBtn.addEventListener('click', submitBooking);
-
-    // زر Edit: تعديل الاسم فقط
-    if(editBtn){
-      editBtn.addEventListener('click', ()=>{
-        form.style.display = 'block';
-        bookingDetails.style.display = 'none';
-        nameInput.focus();
-      });
-    }
-
-    // زر Cancel: حذف الحجز
-    if(cancelBtn){
-      cancelBtn.addEventListener('click', ()=>{
-        let bookings = loadLS();
-        // حذف آخر حجز مؤكد فقط
-        bookings = bookings.filter(b => b.status !== 'booked');
-        saveLS(bookings);
-
-        bookingDetails.style.display = 'none';
-        form.reset();
-        form.style.display = 'block';
-        alert('Booking cancelled. You can create a new one.');
-      });
-    }
-
-    // زر Go to Timeline
-    if(goTimelineBtn){
-      goTimelineBtn.addEventListener('click', ()=>{
-        location.href = 'timeline.html';
-      });
-    }
-
-  });
-})();
+  <!-- JS -->
+  <script src="sidebar.js"></script>
+     <script src="designerInfo.js"></script>
+  <script src="booking.js"></script>
+ 
+</body>
+</html>
