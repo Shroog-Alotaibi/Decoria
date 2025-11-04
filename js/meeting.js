@@ -1,153 +1,108 @@
-// js/booking.js
+// js/meeting.js
 (function(){
   'use strict';
 
-  const LS_KEY = 'decoria_bookings';
+  const LS_KEY = 'decoria_meeting';
   const byId = id => document.getElementById(id);
 
-  // تحميل الحجز من localStorage
-  function loadLS(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-    catch { return []; }
-  }
-
-  // حفظ الحجز في localStorage
-  function saveLS(arr){
-    localStorage.setItem(LS_KEY, JSON.stringify(arr));
-  }
-
-  // جلب بيانات المصممين
-  function getDesignersMap(){
-    return (window.DESIGNERS && typeof window.DESIGNERS === 'object') ? window.DESIGNERS : {};
-  }
-
-  // التحقق من تعارض المواعيد
-  function slotConflict(bookings, designerId, date, time){
-    return bookings.some(b => b.designerId === designerId && b.date === date && b.time === time && b.status !== 'cancelled');
-  }
-
-  function isoNow(){ return (new Date()).toISOString(); }
+  function saveMeeting(data){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+  function getMeeting(){ return JSON.parse(localStorage.getItem(LS_KEY) || "null"); }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    const sel = byId('designer');
-    const form = document.querySelector('.booking-form') || byId('bookingForm');
+    const designerSelect = byId('designer');
     const dateInput = byId('date');
     const timeInput = byId('time');
-    const paymentInput = byId('payment');
-    const nameInput = byId('clientName');
-    const confirmBtn = byId('confirmBooking');
+    const formEl = document.querySelector('.meeting-form') || byId('meetingForm');
+    const meetingMessage = byId('meetingMessage');
+    const joinBtn = byId('joinMeeting');
 
-    const bookingDetails = byId('bookingDetails');
-    const detailName = byId('detailName');
-    const detailDate = byId('detailDate');
-    const detailTime = byId('detailTime');
+    const meetingInfoDiv = byId('meetingInfo');
+    const editMeetingBtn = byId('editMeeting');
+    const cancelMeetingBtn2 = byId('cancelMeeting2');
 
-    const editBtn = byId('editBooking');
-    const cancelBtn = byId('cancelBooking2');
-    const goTimelineBtn = byId('goTimeline');
+    const designers = (window.DESIGNERS && typeof window.DESIGNERS === 'object') ? window.DESIGNERS : {};
 
-    const designers = getDesignersMap();
-
-    // populate select
-    if(sel){
-      sel.innerHTML = `<option value="">Select a Designer</option>`;
+    if(designerSelect){
+      const firstPlaceholder = designerSelect.querySelector('option[value=""]') ? designerSelect.querySelector('option[value=""]').outerHTML : '<option value="">Choose...</option>';
+      designerSelect.innerHTML = firstPlaceholder;
       Object.entries(designers).forEach(([id, info])=>{
         const opt = document.createElement('option');
         opt.value = id;
         opt.textContent = info.name || id;
-        sel.appendChild(opt);
+        designerSelect.appendChild(opt);
       });
+      const p = new URLSearchParams(location.search);
+      const pre = p.get('designer');
+      if(pre && designers[pre]) designerSelect.value = pre;
     }
 
-    // قراءة قيم الفورم
-    function readFormValues(){
-      return {
-        designerId: sel.value.trim(),
-        date: dateInput.value,
-        time: timeInput.value,
-        payment: paymentInput.value,
-        clientName: nameInput.value.trim() || 'Guest'
-      };
+    function showMeetingDetails(meeting){
+      byId('meetingName').textContent = meeting.clientName || byId('name').value;
+      byId('meetingDate').textContent = meeting.date;
+      byId('meetingTime').textContent = meeting.time;
+      byId('zoomLink').href = meeting.zoom || 'https://zoom.us/j/123456789';
+      meetingInfoDiv.style.display = 'block';
+      formEl.style.display = 'none';
     }
 
-    // عرض تفاصيل الحجز
-    function showBookingDetailsUI(booking){
-      detailName.textContent = booking.clientName;
-      detailDate.textContent = booking.date;
-      detailTime.textContent = booking.time;
-      form.style.display = 'none';
-      bookingDetails.style.display = 'block';
-    }
+    function handleConfirm(e){
+      if(e && e.preventDefault) e.preventDefault();
+      const designerId = designerSelect ? (designerSelect.value || '').trim() : '';
+      const date = dateInput ? dateInput.value : '';
+      const time = timeInput ? timeInput.value : '';
+      const clientName = byId('name') ? byId('name').value : 'Guest';
 
-    // حفظ الحجز
-    function submitBooking(e){
-      if(e) e.preventDefault();
-      const vals = readFormValues();
-
-      if(!vals.designerId || !vals.date || !vals.time || !vals.clientName){
-        alert('Please fill all required fields.');
+      if(!designerId || !date || !time){
+        alert('Please fill all fields before confirming.');
         return;
       }
 
-      const bookings = loadLS();
-
-      if(slotConflict(bookings, vals.designerId, vals.date, vals.time)){
-        if(!confirm('This slot is already booked. Continue anyway?')) return;
-      }
-
-      const newBooking = {
-        id: 'bk_' + Math.random().toString(36).slice(2,9),
-        designerId: vals.designerId,
-        designerName: (designers[vals.designerId] && designers[vals.designerId].name) || vals.designerId,
-        date: vals.date,
-        time: vals.time,
-        payment: vals.payment,
-        clientName: vals.clientName,
-        status: 'booked',
-        createdAt: isoNow()
+      const meeting = {
+        id: 'mt_' + Math.random().toString(36).slice(2,9),
+        designerId,
+        designerName: designers[designerId] ? designers[designerId].name : designerId,
+        zoom: 'https://zoom.us/j/123456789',
+        date, time, clientName,
+        createdAt: new Date().toISOString()
       };
 
-      bookings.push(newBooking);
-      saveLS(bookings);
-
-      alert('Booking confirmed ✅');
-      showBookingDetailsUI(newBooking);
+      saveMeeting(meeting);
+      showMeetingDetails(meeting);
+      alert(`Meeting confirmed ✅\nWith: ${meeting.designerName}\n${meeting.date} ${meeting.time}`);
     }
 
-    // أحداث الفورم
-    form.addEventListener('submit', submitBooking);
-    if(confirmBtn) confirmBtn.addEventListener('click', submitBooking);
+    formEl.addEventListener('submit', handleConfirm);
+    const confirmBtn = byId('confirmMeeting');
+    if(confirmBtn) confirmBtn.addEventListener('click', handleConfirm);
 
-    // زر Edit: تعديل الاسم فقط
-    if(editBtn){
-      editBtn.addEventListener('click', ()=>{
-        form.style.display = 'block';
-        bookingDetails.style.display = 'none';
-        nameInput.focus();
+    if(editMeetingBtn){
+      editMeetingBtn.addEventListener('click', ()=>{
+        formEl.style.display = 'block';
+        meetingInfoDiv.style.display = 'none';
       });
     }
 
-    // زر Cancel: حذف الحجز
-    if(cancelBtn){
-      cancelBtn.addEventListener('click', ()=>{
-        let bookings = loadLS();
-        // حذف آخر حجز مؤكد فقط
-        bookings = bookings.filter(b => b.status !== 'booked');
-        saveLS(bookings);
-
-        bookingDetails.style.display = 'none';
-        form.reset();
-        form.style.display = 'block';
-        alert('Booking cancelled. You can create a new one.');
+    if(cancelMeetingBtn2){
+      cancelMeetingBtn2.addEventListener('click', ()=>{
+        localStorage.removeItem(LS_KEY);
+        formEl.style.display = 'block';
+        meetingInfoDiv.style.display = 'none';
+        formEl.reset();
+        alert('Meeting cancelled, you can schedule a new one.');
       });
     }
 
-    // زر Go to Timeline
-    if(goTimelineBtn){
-      goTimelineBtn.addEventListener('click', ()=>{
-        location.href = 'timeline.html';
+    if(joinBtn){
+      joinBtn.addEventListener('click', ()=>{
+        const saved = getMeeting();
+        if(!saved){ alert('No meeting found.'); return; }
+        if(saved.zoom){
+          window.open(saved.zoom, '_blank');
+        } else {
+          alert('Zoom link not available.');
+        }
       });
     }
 
-  });
+  }); // DOMContentLoaded
 })();
