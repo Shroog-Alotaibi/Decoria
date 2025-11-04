@@ -256,7 +256,7 @@
   <header class="site-header">
     <div class="container header-container">
       <div class="brand">
-        <img src="photo/Logo.png" alt="DECORIA Logo" class="logo">
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
       </div>
       <p class="welcome-text">Welcome to DECORIA</p>
       <div class="header-buttons">
@@ -265,12 +265,16 @@
     </div>
   </header>
 
+  <!-- Sidebar Menu -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
     <a href="designers.html">Designers</a>
-    <a href="mybookings.html">Bookings</a>
-    <a href="about.html">About</a>
+    <a href="booking.html" class="active">Booking</a>
+    <a href="timeline.html">Timeline</a>
+    <a href="meeting.html">Meeting</a>
     <a href="settings.html">Settings</a>
+    <hr>
+    <a href="#" class="logout">Logout</a>
   </div>
   <div id="overlay"></div>
 
@@ -291,14 +295,13 @@
       <a href="#" id="joinDesigner">Join DECORIA</a>
     </div>
   </section>
-
-  <footer>
+<footer>
     <div class="footer-content">
       <p class="footer-text">
         © 2025 DECORIA — All rights reserved
-        | <a href="terms-of-use.html">Terms & Conditions</a>
+        | <a href="terms.html">Terms & Conditions</a>
       </p>
-      <img src="photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
+      <img src="../photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
     </div>
   </footer>
 
@@ -323,7 +326,7 @@
 
     // Background slideshow
     const hero = document.getElementById("hero");
-    const images = ["photo/room44.jpeg", "photo/room33.jpeg"];
+    const images = ["../photo/room44.jpeg", "../photo/room33.jpeg"];
     let current = 0;
     hero.style.backgroundImage = `url(${images[current]})`;
     setInterval(() => {
