@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Designer Timeline - Decoria</title>
+
+  <!-- CSS links -->
+  <link rel="stylesheet" href="../css/decoria.css" />
+  <style>
+    /* Timeline-specific styles */
+    .timeline-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .timeline-options {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .timeline-option {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .timeline-option input[type="checkbox"] {
+      display: none;
+    }
+    
+    .timeline-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    
+    .timeline-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    
+    .timeline-card.selected {
+      border-color: var(--brand);
+      background-color: rgba(59, 77, 59, 0.05);
+    }
+    
+    .timeline-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .timeline-title {
+      font-weight: 700;
+      color: var(--brand);
+      margin-bottom: 10px;
+    }
+    
+    .timeline-description {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .update-section {
+      text-align: center;
+      margin-top: 40px;
+    }
+    
+    .update-btn {
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    
+    .update-btn:hover {
+      background: var(--primary-btn-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    }
+    
+    .update-message {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: rgba(59, 77, 59, 0.1);
+      border-radius: 8px;
+      color: var(--brand);
+      font-weight: 600;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .timeline-options {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="brand">
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+      </div>
+
+      <p class="welcome-text">Welcome to DECORIA</p>
+
+      <div class="header-buttons">
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+    <a href="home.html">Home</a>
+    <a href="designers.html" class="active">Designers</a>
+    <a href="mybookings.html">Bookings</a>
+    <a href="about.html">About</a>
+    <a href="#">My Account</a>
+    <a href="settings.html">Settings</a>
+    <hr>
+    <a href="#" class="logout">Logout</a>
+  </div>
+
+  <div id="overlay"></div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="timeline-container">
+      <h2 class="section-title">Designer Timeline</h2>
+      <p>Update the status of your current project to keep clients informed.</p>
+      
+      <form id="timelineForm">
+        <div class="timeline-options">
+          <!-- Option 1: Got the Request -->
+          <label class="timeline-option">
+            <input type="checkbox" name="status" value="request" id="requestCheckbox" checked>
+            <div class="timeline-card selected">
+              <img src="../photo/request-received.png" alt="Request Received" class="timeline-image">
+              <h3 class="timeline-title">Got the Request</h3>
+              <p class="timeline-description">Initial request received and under review</p>
+            </div>
+          </label>
+          
+          <!-- Option 2: In Progress -->
+          <label class="timeline-option">
+            <input type="checkbox" name="status" value="progress" id="progressCheckbox">
+            <div class="timeline-card">
+              <img src="../photo/InProgress.png" alt="In Progress" class="timeline-image">
+              <h3 class="timeline-title">In Progress</h3>
+              <p class="timeline-description">Currently working on the project</p>
+            </div>
+          </label>
+          
+          <!-- Option 3: Completed -->
+          <label class="timeline-option">
+            <input type="checkbox" name="status" value="completed" id="completedCheckbox">
+            <div class="timeline-card">
+              <img src="../photo/completed.png" alt="Completed" class="timeline-image">
+              <h3 class="timeline-title">Completed</h3>
+              <p class="timeline-description">Project finished and delivered</p>
+            </div>
+          </label>
+        </div>
+        
+        <div class="update-section">
+          <button type="button" class="update-btn" id="updateBtn">Update Status</button>
+          <div class="update-message" id="updateMessage">
+            Status updated successfully! The customer has been updated.
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p class="footer-text">© 2025 DECORIA — All rights reserved</p>
+      <img src="../photo/darlfooter.jpeg" alt="DECORIA Logo" class="footer-image">
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="../js/sidebar.js"></script>
+  <script>
+    // Timeline functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkboxes = document.querySelectorAll('input[name="status"]');
+      const updateBtn = document.getElementById('updateBtn');
+      const updateMessage = document.getElementById('updateMessage');
+      
+      // Only allow one checkbox to be selected at a time
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            // Uncheck all other checkboxes
+            checkboxes.forEach(otherCheckbox => {
+              if (otherCheckbox !== this) {
+                otherCheckbox.checked = false;
+                otherCheckbox.parentNode.querySelector('.timeline-card').classList.remove('selected');
+              }
+            });
+            
+            // Add selected class to current checkbox's card
+            this.parentNode.querySelector('.timeline-card').classList.add('selected');
+          } else {
+            // Remove selected class when unchecked
+            this.parentNode.querySelector('.timeline-card').classList.remove('selected');
+          }
+        });
+      });
+      
+      // Update button functionality
+      updateBtn.addEventListener('click', function() {
+        const selectedCheckbox = document.querySelector('input[name="status"]:checked');
+        
+        if (selectedCheckbox) {
+          // Show success message
+          updateMessage.style.display = 'block';
+          
+          // Hide message after 3 seconds
+          setTimeout(function() {
+            updateMessage.style.display = 'none';
+          }, 3000);
+        } else {
+          alert('Please select a status option before updating.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

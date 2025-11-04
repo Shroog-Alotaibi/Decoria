@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Page</title>
+
+  <!-- CSS links -->
+  <link rel="stylesheet" href="../css/decoria.css" />
+  <link rel="stylesheet" href="../css/designers.css" />
+  <link rel="stylesheet" href="../css/settings.css" />
+  
+  <style>
+    :root {
+      --bg1: #f8f5ee;
+      --bg2: #eae6da;
+      --brand: #3b4d3b;
+      --border: #d8d3c5;
+      --text: #2e2a23;
+      --card: #ffffff;
+      --primary-btn: #3b4d3b;
+      --primary-btn-hover: #2c3e2f;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      background-size: 200% 200%;
+      animation: bgMove 12s ease-in-out infinite;
+      font-family: 'Tajawal', sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0;
+    }
+
+    /* خلفية تتحرك بخفة */
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* حاوية الفورم */
+    .register-container {
+      background: var(--card);
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      text-align: center;
+      width: 360px;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1.2s ease forwards;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    /* حركة دخول */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* تأثير تفاعل عند المرور */
+    .register-container:hover {
+      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+      transform: scale(1.02);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--brand);
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      border-color: var(--brand);
+      outline: none;
+      box-shadow: 0 0 5px rgba(59,77,59,0.3);
+      transform: scale(1.01);
+    }
+
+    button, input[type="submit"] {
+      background: var(--brand);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    button:hover, input[type="submit"]:hover {
+      background: var(--primary-btn-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(59,77,59,0.25);
+    }
+
+    .links {
+      margin-top: 20px;
+      font-size: 15px;
+      animation: fadeIn 1.8s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .links a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .links a:hover {
+      color: var(--primary-btn-hover);
+      text-decoration: underline;
+    }
+
+    /* Style for error messages */
+    .error {
+      color: red;
+      font-size: 14px;
+      text-align: left;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Style for checkbox */
+    label[for="terms"] {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    /* Message styling */
+    #message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    /* Footer styling */
+    footer {
+      width: 100%;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+
+  <!-- main -->
+  <div class="register-container">
+    <h2>Register</h2>
+    <form id="registerForm" onsubmit="return validateForm(event)">
+      <input type="text" id="username" name="username" placeholder="Username" required>
+      <span id="usernameError" class="error"></span>
+
+      <input type="email" id="email" name="email" placeholder="Email" required>
+      <span id="emailError" class="error"></span>
+
+      <input type="text" id="phone" name="phone" placeholder="Phone Number (e.g., 05XXXXXXXX)" required>
+      <span id="phoneError" class="error"></span>
+
+      <input type="password" id="password" name="password" placeholder="Password" required>
+      <span id="passwordError" class="error"></span>
+
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+      <span id="confirmPasswordError" class="error"></span>
+
+      <label for="terms">
+        <input type="checkbox" id="terms"> I accept the Terms of Use
+      </label>
+      <span id="termsError" class="error"></span>
+
+      <input type="submit" value="Register">
+    </form>
+
+    <p id="message"></p>
+    
+    <div class="links">
+      Already have an account? <a href="login.html">Login here</a>
+    </div>
+  </div>
+
+   <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p class="footer-text">© 2025 DECORIA — All rights reserved</p>
+      <img src="../photo/darlfooter.jpeg" alt="DECORIA Logo" class="footer-image">
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/register.js"></script>
+</body>
+</html>
