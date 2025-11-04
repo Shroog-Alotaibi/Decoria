@@ -249,6 +249,41 @@
       cursor: pointer;
     }
     .popup button:hover { background: var(--primary-btn-hover); }
+    .auth-buttons {
+  display: inline-flex;
+  gap: 10px;
+  margin-right: 15px;
+}
+
+.auth-btn {
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.auth-btn.login {
+  background: var(--brand);
+  color: #fff;
+}
+
+.auth-btn.register {
+  background: #fff;
+  color: var(--brand);
+  border: 1px solid var(--brand);
+}
+
+.auth-btn.login:hover {
+  background: var(--primary-btn-hover);
+}
+
+.auth-btn.register:hover {
+  background: var(--brand);
+  color: #fff;
+}
+
   </style>
 </head>
 <body>
@@ -260,6 +295,10 @@
       </div>
       <p class="welcome-text">Welcome to DECORIA</p>
       <div class="header-buttons">
+          <div class="auth-buttons">
+    <a href="login.html" class="auth-btn login">Login</a>
+    <a href="register.html" class="auth-btn register">Register</a>
+  </div>
         <button class="menu-toggle">☰</button>
       </div>
     </div>
@@ -274,7 +313,7 @@
     <a href="meeting.html">Meeting</a>
     <a href="settings.html">Settings</a>
     <hr>
-    <a href="login.html" class="logout">Logout</a>
+    
   </div>
   <div id="overlay"></div>
 
