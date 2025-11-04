@@ -379,3 +379,11 @@ document.addEventListener("DOMContentLoaded",()=>{
     openLightbox(img.currentSrc || img.src, img.alt || '');
   }, false);
 })();
+window.DESIGNERS = {
+  esra:  { name: "Esra Aljaser",    zoom: "https://zoom.us/j/9876543210" },
+  felwa: { name: "Felwa Althagfan", zoom: "https://zoom.us/j/9876543211" },
+  ghada: { name: "Ghada Alotaibi",  zoom: "https://zoom.us/j/9876543212" },
+  hessa: { name: "Hessa Alnafisah", zoom: "https://zoom.us/j/9876543213" },
+  muntaha:{ name: "Muntaha",        zoom: "https://zoom.us/j/9876543214" },
+  ahmed: { name: "Ahmed Zaher",     zoom: "https://zoom.us/j/9876543215" }
+};
