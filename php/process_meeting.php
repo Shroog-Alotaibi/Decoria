@@ -1,25 +1,25 @@
 <?php
 // ===================================
-// إعدادات الاتصال بقاعدة البيانات
+// Database connection settings
 // ===================================
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
 $DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
-// إنشاء الاتصال
+// Create connection
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 
-// التحقق من الاتصال
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// لضمان دعم اللغة العربية بشكل صحيح
+// Ensure proper Arabic UTF-8 support
 $conn->set_charset("utf8mb4");
 
 // ===================================
-// إدارة الجلسات والتحقق من تسجيل الدخول
+// Session management and login check
 // ===================================
 session_start();
 
@@ -29,7 +29,7 @@ function redirect_to($location) {
 }
 
 /**
- * التحقق من تسجيل الدخول والدور المطلوب
+ * Verify login and required role
  */
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
@@ -41,31 +41,31 @@ function check_login($role_required = '') {
     }
 }
 
-// التحقق من تسجيل دخول العميل
+// Verify customer login
 check_login('Customer'); 
 
-// التحقق من إرسال البيانات بطريقة POST
+// Verify POST request
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     redirect_to('meeting.php');
 }
 
-// 1. استخراج البيانات من الـ POST و الجلسة
-$clientID = $_SESSION['userID']; // سحب ID العميل من الجلسة
+// 1. Extract data from POST and session
+$clientID = $_SESSION['userID']; // Fetch client ID from session
 $designerID = $conn->real_escape_string($_POST['designerID']);
 $date = $conn->real_escape_string($_POST['date']);
 $time = $conn->real_escape_string($_POST['time']);
 $note = $conn->real_escape_string($_POST['note']);
 $status = 'Pending'; 
-$price = 350; // رسوم الاستشارة الافتراضية
+$price = 350; // Default consultation fee
 
-// 2. إدراج الاجتماع في قاعدة البيانات
+// 2. Insert meeting into the database
 $sql_insert = "INSERT INTO meeting (clientID, designerID, date, time, status, note, price) 
                VALUES ('$clientID', '$designerID', '$date', '$time', '$status', '$note', '$price')";
 
 if ($conn->query($sql_insert) === TRUE) {
     $meetingID = $conn->insert_id;
 
-    // 3. جلب رابط Zoom واسم المصمم
+    // 3. Fetch Zoom link and designer name
     $sql_zoom = "SELECT u.name AS designerName, d.zoomLink FROM designer d 
                  JOIN user u ON d.designerID = u.userID 
                  WHERE d.designerID = '$designerID'";
@@ -73,7 +73,7 @@ if ($conn->query($sql_insert) === TRUE) {
     $zoom_data = $result_zoom->fetch_assoc();
     $zoomLink = $zoom_data['zoomLink'] ?? '#';
 
-    // 4. عرض رسالة النجاح وتفاصيل الاجتماع (يمكنك توجيهه لصفحة أخرى إذا أردت)
+    // 4. Display success message and meeting details
     echo "
         <!DOCTYPE html>
         <html lang='en' dir='rtl'>
@@ -89,20 +89,20 @@ if ($conn->query($sql_insert) === TRUE) {
         </head>
         <body>
             <div class='message-box'>
-                <h1>✅ تم حجز الاجتماع بنجاح!</h1>
-                <p><strong>المصمم:</strong> {$zoom_data['designerName']}</p>
-                <p><strong>التاريخ:</strong> $date</p>
-                <p><strong>الوقت:</strong> $time</p>
-                <p><strong>رابط Zoom:</strong> <a href='{$zoomLink}' target='_blank' style='color:#3b4d3b; font-weight:bold;'>انضم للاجتماع الآن</a></p>
-                <p style='margin-top: 20px;'><a href='meeting.php' class='primary-btn'>حجز اجتماع آخر</a></p>
+                <h1>✅ The meeting has been successfully booked!</h1>
+                <p><strong>Designer:</strong> {$zoom_data['designerName']}</p>
+                <p><strong>Date:</strong> $date</p>
+                <p><strong>Time:</strong> $time</p>
+                <p><strong>Zoom Link:</strong> <a href='{$zoomLink}' target='_blank' style='color:#3b4d3b; font-weight:bold;'>Join the meeting now</a></p>
+                <p style='margin-top: 20px;'><a href='meeting.php' class='primary-btn'>Book another meeting</a></p>
             </div>
         </body>
         </html>
     ";
 
 } else {
-    // عرض رسالة خطأ
-    die("حدث خطأ أثناء الحجز: " . $conn->error);
+    // Display error message
+    die("An error occurred while booking: " . $conn->error);
 }
 
 $conn->close();
