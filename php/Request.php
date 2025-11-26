@@ -4,7 +4,7 @@
 // ===================================
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
-$DB_PASS = '';     
+$DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
 // إنشاء الاتصال
@@ -33,7 +33,7 @@ function redirect_to($location) {
  */
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
-        redirect_to('login.html');
+        redirect_to('login.php');
     }
     
     if ($role_required && (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)) {
@@ -122,17 +122,19 @@ usort($requests, function($a, $b) {
     </div>
   </header>
 
- <div class="sidebar" id="sidebar">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
     <a href="home.html">Home</a>
-    <a href="designers.html">Designers</a>
-    <a href="booking.html">Booking</a>
-    <a href="timeline.html">Timeline</a>
-    <a href="meeting.html">Meeting</a>
-    <a href="settings.html">Settings</a>
+    <a href="designers.php">Designers</a>
+    <a href="booking.php" class="active">Booking</a>
+    <a href="timeline.php">Timeline</a>
+    <a href="meeting.php">Meeting</a>
+    <a href="settings.php">Settings</a>
     <hr>
-    <a href="login.html" class="logout">Logout</a>
+    <a href="login.php" class="logout">Logout</a>
   </div>
+
 
   <div id="overlay"></div>
 
