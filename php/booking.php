@@ -74,16 +74,17 @@ $designers_result = $conn->query($designers_query);
   </header>
 
 
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
     <a href="home.html">Home</a>
-    <a href="designers.html">Designers</a>
-    <a href="booking.html" class="active">Booking</a>
-    <a href="timeline.html">Timeline</a>
-    <a href="meeting.html">Meeting</a>
-    <a href="settings.html">Settings</a>
+    <a href="designers.php">Designers</a>
+    <a href="booking.php" class="active">Booking</a>
+    <a href="timeline.php">Timeline</a>
+    <a href="meeting.php">Meeting</a>
+    <a href="settings.php">Settings</a>
     <hr>
-   <a href="login.html" class="logout">Logout</a>
+    <a href="login.php" class="logout">Logout</a>
   </div>
 
   <div id="overlay"></div>
