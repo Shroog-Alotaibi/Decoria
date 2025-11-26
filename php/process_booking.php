@@ -1,25 +1,25 @@
 <?php
 // ===================================
-// إعدادات الاتصال بقاعدة البيانات
+// Database connection settings
 // ===================================
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
 $DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
-// إنشاء الاتصال
+// Create connection
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 
-// التحقق من الاتصال
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// لضمان دعم اللغة العربية بشكل صحيح
+// Ensure proper Arabic/UTF-8 support
 $conn->set_charset("utf8mb4");
 
 // ===================================
-// إدارة الجلسات والتحقق من تسجيل الدخول
+// Session management and login check
 // ===================================
 session_start();
 
@@ -29,7 +29,7 @@ function redirect_to($location) {
 }
 
 /**
- * التحقق من تسجيل الدخول والدور المطلوب
+ * Verify login and required role
  */
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
@@ -41,14 +41,14 @@ function check_login($role_required = '') {
     }
 }
 
-// التحقق من تسجيل دخول العميل
+// Verify customer login
 check_login('Customer'); 
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     redirect_to('booking.php');
 }
 
-// 1. معالجة رفع الملف
+// 1. Handle file upload
 $transactionPhotoPath = null;
 if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] === UPLOAD_ERR_OK) {
     $fileTmpPath = $_FILES['transactionPhoto']['tmp_name'];
@@ -58,41 +58,41 @@ if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] =
     $fileNameCmps = explode(".", $fileName);
     $fileExtension = strtolower(end($fileNameCmps));
 
-    // إنشاء اسم ملف فريد لحفظه في المجلد
+    // Create a unique file name to save it in the folder
     $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
 
-    // **ملاحظة:** يجب إنشاء مجلد باسم 'transaction_uploads' في المسار المناسب لمشروعك
+    // **Note:** You must create a folder named 'transaction_uploads' in the correct project path
     $uploadFileDir = '../transaction_uploads/'; 
     $destPath = $uploadFileDir . $newFileName;
 
     if(move_uploaded_file($fileTmpPath, $destPath)) {
-        // يتم تخزين اسم الملف فقط أو مساره (بناءً على كيف ستعرضه لاحقاً)
+        // Save file name or its path (depending on how you plan to display it later)
         $transactionPhotoPath = $conn->real_escape_string($newFileName); 
     } else {
-        die("حدث خطأ في حفظ صورة الحوالة. الرجاء المحاولة مرة أخرى.");
+        die("An error occurred while saving the transaction photo. Please try again.");
     }
 } else {
-     die("صورة الحوالة مطلوبة لتأكيد الحجز. يرجى العودة وإرفاقها.");
+     die("The transaction photo is required to confirm the booking. Please go back and attach it.");
 }
 
 
-// 2. استخراج البيانات من الـ POST و الجلسة
+// 2. Extract data from POST and session
 $clientID = $_SESSION['userID'];
 $designerID = $conn->real_escape_string($_POST['designerID']);
 $date = $conn->real_escape_string($_POST['date']);
 $time = $conn->real_escape_string($_POST['time']);
-$status = 'Payment Pending'; // الحالة الأولية بعد إرفاق صورة الحوالة
-$price = 10000; // سعر الحجز الافتراضي
+$status = 'Payment Pending'; // Initial status after uploading the transaction photo
+$price = 10000; // Default booking price
 
-// 3. إدراج الحجز في قاعدة البيانات
-// ملاحظة: تم استخدام حقل 'receipt' لتخزين اسم ملف صورة الحوالة ($transactionPhotoPath)
+// 3. Insert booking into the database
+// Note: The 'receipt' field is used to store the transaction photo file name ($transactionPhotoPath)
 $sql_insert = "INSERT INTO booking (clientID, designerID, date, time, status, price, receipt) 
                VALUES ('$clientID', '$designerID', '$date', '$time', '$status', '$price', '$transactionPhotoPath')";
 
 if ($conn->query($sql_insert) === TRUE) {
     $bookingID = $conn->insert_id;
 
-    // 4. عرض رسالة النجاح
+    // 4. Display success message
     echo "
         <!DOCTYPE html>
         <html lang='en' dir='rtl'>
@@ -108,20 +108,20 @@ if ($conn->query($sql_insert) === TRUE) {
         </head>
         <body>
             <div class='message-box'>
-                <h1>✅ تم إرسال طلب الحجز بنجاح!</h1>
-                <p><strong>رقم الحجز:</strong> $bookingID</p>
-                <p><strong>التاريخ:</strong> $date</p>
-                <p><strong>الحالة:</strong> $status (قيد مراجعة صورة الحوالة)</p>
-                <p style='margin-top: 20px;'>سوف يتم مراجعة صورة الحوالة البنكية من قبل فريقنا قريباً.</p>
-                <p style='margin-top: 20px;'><a href='timeline.html' class='primary-btn'>عرض جدول المشروع (Timeline)</a></p>
+                <h1>✅ Your booking request has been successfully submitted!</h1>
+                <p><strong>Booking Number:</strong> $bookingID</p>
+                <p><strong>Date:</strong> $date</p>
+                <p><strong>Status:</strong> $status (Transaction photo under review)</p>
+                <p style='margin-top: 20px;'>Our team will review your bank transfer photo soon.</p>
+                <p style='margin-top: 20px;'><a href='timeline.html' class='primary-btn'>View Project Timeline</a></p>
             </div>
         </body>
         </html>
     ";
 
 } else {
-    // عرض رسالة خطأ
-    die("حدث خطأ أثناء الحجز: " . $conn->error);
+    // Display error message
+    die("An error occurred while booking: " . $conn->error);
 }
 
 $conn->close();
