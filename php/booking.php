@@ -4,7 +4,7 @@
 // ===================================
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
-$DB_PASS = '';     
+$DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
 // إنشاء الاتصال
@@ -33,7 +33,7 @@ function redirect_to($location) {
  */
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
-        redirect_to('login.html');
+        redirect_to('login.php');
     }
     
     if ($role_required && (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)) {
@@ -106,12 +106,17 @@ $designers_result = $conn->query($designers_query);
         ?>
       </select>
 
+       <label for="time">Choose design:</label>
+       <select id="design" name="designID" required disabled>
+       <option value="">Please select a designer first</option>
+        </select>
+
       <label for="date">Choose Date:</label>
       <input type="date" id="date" name="date" required>
 
       <label for="time">Choose Time:</label>
       <input type="time" id="time" name="time" required>
-
+        
       <label for="transactionPhoto">Upload Transaction Photo:</label>
       <input type="file" id="transactionPhoto" name="transactionPhoto" accept="image/*" required>
       <div class="btn-row">
@@ -121,7 +126,8 @@ $designers_result = $conn->query($designers_query);
 
 <div id="bookingDetails" class="booking-message" style="display:none;">
   <p>✅ Booking confirmed successfully!</p>
-  <p><strong>Name:</strong> <span id="detailName"></span></p>
+  <p><strong>Designer:</strong> <span id="detailName"></span></p>
+  <p><strong>Design:</strong> <span id="detailDesign"></span></p>
   <p><strong>Date:</strong> <span id="detailDate"></span></p>
   <p><strong>Time:</strong> <span id="detailTime"></span></p>
 
