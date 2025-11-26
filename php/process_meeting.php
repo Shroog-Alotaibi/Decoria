@@ -4,7 +4,7 @@
 // ===================================
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
-$DB_PASS = '';     
+$DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
 // إنشاء الاتصال
@@ -33,7 +33,7 @@ function redirect_to($location) {
  */
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
-        redirect_to('login.html');
+        redirect_to('login.php');
     }
     
     if ($role_required && (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)) {
