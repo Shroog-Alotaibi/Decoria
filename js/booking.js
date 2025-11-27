@@ -1,139 +1,120 @@
-// js/booking.js
+// js/booking.js (مع إضافة منطق تعديل واختيار التصميم ديناميكياً)
 (function(){
-  'use strict';
+  'use strict';
 
-  const LS_KEY = 'decoria_bookings';
-  const byId = id => document.getElementById(id);
+  // تم إزالة جميع الدوال المتعلقة بـ Local Storage للسماح بالإرسال إلى الخادم
+  
+  const byId = id => document.getElementById(id);
 
-  function loadLS(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-    catch { return []; }
-  }
-  function saveLS(arr){
-    localStorage.setItem(LS_KEY, JSON.stringify(arr));
-  }
+  function getDesignersMap(){
+    // يفترض أن هذا الكائن موجود ومملوء ببيانات المصممين
+    return (window.DESIGNERS && typeof window.DESIGNERS === 'object') ? window.DESIGNERS : {};
+  }
 
-  function getDesignersMap(){
-    return (window.DESIGNERS && typeof window.DESIGNERS === 'object') ? window.DESIGNERS : {};
-  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const sel = byId('designer'); // قائمة المصممين
+    const designSelect = byId('design'); // **الجديد: قائمة التصاميم**
+    const form = document.querySelector('.booking-form') || byId('bookingForm');
+    const dateInput = byId('date');
+    const timeInput = byId('time');
+    const bookingDetailsDiv = byId('bookingDetails'); 
 
-  function slotConflict(bookings, designerId, date, time){
-    return bookings.some(b => b.designerId === designerId && b.date === date && b.time === time && b.status !== 'cancelled');
-  }
+    const designers = getDesignersMap();
 
-  function isoNow(){ return (new Date()).toISOString(); }
+    // 1. ملء قائمة المصممين
+    if(sel){
+      sel.innerHTML = `<option value="">Select a Designer</option>`;
+      Object.entries(designers).forEach(([id, info])=>{
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = info.name || id;
+        sel.appendChild(opt);
+      });
+      
+      // **الجديد: إضافة معالج لحدث التغيير على قائمة المصممين**
+      sel.addEventListener('change', fetchDesignsByDesigner);
+    }
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const sel = byId('designer');
-    const form = document.querySelector('.booking-form') || byId('bookingForm');
-    const dateInput = byId('date');
-    const timeInput = byId('time');
-    const paymentInput = byId('payment');
-    const confirmBtn = byId('confirmBooking');
-    const bookingMessage = byId('bookingMessage');
-    const viewProgressBtn = byId('viewProgress');
+    // **2. دالة جلب التصاميم بناءً على المصمم (محاكاة)**
+    function fetchDesignsByDesigner() {
+        const designerId = sel.value;
+        designSelect.innerHTML = '<option value="">Loading designs...</option>';
+        designSelect.disabled = true;
 
-    const designers = getDesignersMap();
+        if (designerId) {
+            // **ملاحظة:** يجب تغيير هذا الجزء لاستدعاء ملف PHP على الخادم (مثل fetch('fetch_designs.php?designerID=' + designerId))
+            
+            // محاكاة بيانات التصاميم (للتجربة فقط)
+            const mockDesigns = [
+                {id: 'd001', name: 'Luxury Villa Design'},
+                {id: 'd002', name: 'Cozy Apartment Plan'},
+                {id: 'd003', name: 'Office Layout and Decor'}
+            ];
+            
+            setTimeout(() => { // محاكاة وقت الاستجابة
+                designSelect.innerHTML = '<option value="">Select a Design</option>';
+                mockDesigns.forEach(design => {
+                    const opt = document.createElement('option');
+                    opt.value = design.id;
+                    opt.textContent = design.name;
+                    designSelect.appendChild(opt);
+                });
+                designSelect.disabled = false; // تفعيل القائمة
+            }, 300);
 
-    // populate designer select
-    if(sel){
-      sel.innerHTML = `<option value="">Select a Designer</option>`;
-      Object.entries(designers).forEach(([id, info])=>{
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = info.name || id;
-        sel.appendChild(opt);
-      });
-      const p = new URLSearchParams(location.search);
-      const pre = p.get('designer');
-      if(pre && designers[pre]) sel.value = pre;
-    }
+        } else {
+            designSelect.innerHTML = '<option value="">Please select a designer first</option>';
+            designSelect.disabled = true;
+        }
+    }
 
-    function readFormValues(){
-      const designerId = sel ? (sel.value || '').trim() : '';
-      const date = dateInput ? dateInput.value : '';
-      const time = timeInput ? timeInput.value : '';
-      const payment = paymentInput ? (paymentInput.value || '') : '';
-      const clientName = byId('clientName') ? byId('clientName').value.trim() : (byId('name')? byId('name').value.trim() : 'Guest');
-      const clientEmail = byId('clientEmail') ? byId('clientEmail').value.trim() : (byId('email')? byId('email').value.trim() : '');
-      return { designerId, date, time, payment, clientName, clientEmail };
-    }
+    // 3. معالج إرسال النموذج (التحقق الأولي)
+    function submitBooking(e){
+        const designerId = sel.value;
+        const designId = designSelect.value; // **التحقق من التصميم**
+        const date = dateInput ? dateInput.value : '';
+        const time = timeInput ? timeInput.value : '';
+        const transactionPhoto = byId('transactionPhoto');
 
-    // عرض تفاصيل الحجز
-    function updateTimeline() {
-      const steps = ['step1','step2','step3'];
-      steps.forEach(s => document.getElementById(s)?.classList.add('completed'));
-    }
+        if(!designerId){ alert('Please choose a designer.'); e.preventDefault(); return; }
+        if(!designId){ alert('Please choose a design.'); e.preventDefault(); return; } // **تحقق جديد**
+        if(!date){ alert('Please choose a date.'); e.preventDefault(); return; }
+        if(!time){ alert('Please choose a time.'); e.preventDefault(); return; }
+        if(!transactionPhoto || !transactionPhoto.files.length){ 
+          alert('Please upload a transaction photo.'); e.preventDefault(); return; 
+        }
+        
+        // إذا مر التحقق، يسمح للإرسال بالاستمرار إلى process_booking.php
+        alert('Submitting booking and file upload to server...');
+    }
 
-    function showBookingDetails(booking){
-      byId('detailName').textContent = booking.clientName;
-      byId('detailDate').textContent = booking.date;
-      byId('detailTime').textContent = booking.time;
-      byId('bookingDetails').style.display = 'block';
-      updateTimeline();
-    }
+    form.addEventListener('submit', submitBooking);
 
-    function handleSuccess(newBooking){
-      showBookingDetails(newBooking);
-      if(bookingMessage) bookingMessage.hidden = false;
-    }
+    // 4. أزرار التعديل والإلغاء (تعمل محلياً فقط)
+    const editBtn = document.querySelector('#bookingDetails .btn-row button:first-child');
+    const cancelBtn = document.querySelector('#bookingDetails .btn-row button:last-child');
 
-    function submitBooking(e){
-      if(e && e.preventDefault) e.preventDefault();
-      const vals = readFormValues();
-      if(!vals.designerId){ alert('Please choose a designer.'); return; }
-      if(!vals.date){ alert('Please choose a date.'); return; }
-      if(!vals.time){ alert('Please choose a time.'); return; }
+    if(editBtn){
+      editBtn.addEventListener('click', ()=>{
+        form.style.display = 'block';
+        bookingDetailsDiv.style.display = 'none';
+      });
+    }
 
-      const bookings = loadLS();
+    if(cancelBtn){
+      cancelBtn.addEventListener('click', ()=>{
+        bookingDetailsDiv.style.display = 'none';
+        form.reset();
+        form.style.display = 'block';
+        alert('Booking cancelled.');
+      });
+    }
 
-      if(slotConflict(bookings, vals.designerId, vals.date, vals.time)){
-        const cont = confirm('This slot is already booked for the selected designer. Do you want to continue anyway?');
-        if(!cont) return;
-      }
+    // **إعداد الحالة الأولية لقائمة التصاميم**
+    if (!sel.value) {
+        designSelect.disabled = true;
+        designSelect.innerHTML = '<option value="">Please select a designer first</option>';
+    }
 
-      const newBooking = {
-        id: 'bk_' + Math.random().toString(36).slice(2,9),
-        designerId: vals.designerId,
-        designerName: (designers[vals.designerId] && designers[vals.designerId].name) ? designers[vals.designerId].name : vals.designerId,
-        date: vals.date,
-        time: vals.time,
-        payment: vals.payment || '',
-        clientName: vals.clientName || 'Guest',
-        clientEmail: vals.clientEmail || '',
-        status: 'booked',
-        createdAt: isoNow()
-      };
-
-      bookings.push(newBooking);
-      saveLS(bookings);
-
-      alert('Booking confirmed ✅');
-      handleSuccess(newBooking);
-    }
-
-    form.addEventListener('submit', submitBooking);
-    if(confirmBtn) confirmBtn.addEventListener('click', submitBooking);
-
-    // Edit / Cancel buttons داخل details
-    const editBtn = byId('editBooking');
-    const cancelBtn2 = byId('cancelBooking2');
-
-    if(editBtn){
-      editBtn.addEventListener('click', ()=>{
-        form.style.display = 'block';
-        byId('bookingDetails').style.display = 'none';
-      });
-    }
-
-    if(cancelBtn2){
-      cancelBtn2.addEventListener('click', ()=>{
-        byId('bookingDetails').style.display = 'none';
-        form.reset();
-        form.style.display = 'block';
-        alert('Booking cancelled, you can create a new one.');
-      });
-    }
-
-  }); // DOMContentLoaded
+  }); // DOMContentLoaded
 })();
