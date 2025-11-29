@@ -20,8 +20,6 @@ $designerID = $_SESSION['userID'];
   <link rel="stylesheet" href="../css/designerInfo.css">
 
   <style>
-    /* ---- (same extra styles you already had) ---- */
-
     .edit-controls {
       text-align: center;
       margin: 20px 0;
