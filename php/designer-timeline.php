@@ -8,12 +8,12 @@ if (!isset($_GET['bookingID'])) {
 }
 
 $bookingID = intval($_GET['bookingID']);
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 // Fetch booking + timeline info
 $sql = "SELECT b.*, 
                bt.steps, 
-               u.fullName AS clientName
+               u.name AS clientName
         FROM booking b
         LEFT JOIN bookingtimeline bt ON bt.bookingID = b.bookingID
         LEFT JOIN user u ON u.userID = b.clientID
