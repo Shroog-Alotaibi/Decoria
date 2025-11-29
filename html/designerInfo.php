@@ -7,11 +7,11 @@ ini_set('display_errors', 1);
 // 1. الاتصال بقاعدة البيانات
 // ================================
 $host = "localhost";
-$user = "root"; 
+$user = "root";
 $pass = "root";     
 $dbname = "decoria";
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+$conn = new mysqli($host, $user, $pass, $dbname , 8889);
 $conn->set_charset("utf8");
 
 if ($conn->connect_error) {
@@ -22,6 +22,9 @@ if ($conn->connect_error) {
 // 2. استلام رقم المصمم من الرابط
 // ================================
 $designerID = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($designerID <= 0) {
+    die("Invalid Designer ID");
+}
 
 // ================================
 // 3. جلب بيانات المصمّم
@@ -34,20 +37,34 @@ $designerQuery = $conn->query("
 ");
 
 $designer = $designerQuery->fetch_assoc();
+if (!$designer) {
+    die("Designer Not Found");
+}
+
+// ===== أهم نقطة =====
+// تصحيح مسار الصورة
+$designer['profilePicture'] = "Decoria-main/" . ltrim($designer['profilePicture'], "/");
 
 // ================================
 // 4. جلب التصاميم
 // ================================
 $designsQuery = $conn->query("
-    SELECT * FROM design
+    SELECT title, description, image
+    FROM design
     WHERE designerID = $designerID
 ");
 
+$designs = [];
+while ($d = $designsQuery->fetch_assoc()) {
+    $d['image'] = "Decoria-main/" . ltrim($d['image'], "/");
+    $designs[] = $d;
+}
+
 // ================================
-// 5. جلب الريفيوهات (التعديل المهم هنا)
+// 5. جلب الريفيوهات
 // ================================
 $reviewsQuery = $conn->query("
-    SELECT r.rating, r.comment, r.reviewDate, u.name
+    SELECT r.rating, r.comment, u.name
     FROM review r
     JOIN user u ON u.userID = r.clientID
     WHERE r.designerID = $designerID
@@ -97,35 +114,31 @@ $reviewsQuery = $conn->query("
   <main class="container">
 
     <!-- Banner -->
-    <section class="profile-banner" id="profileBanner">
+    <section class="profile-banner">
       <a class="back-arrow" href="designers.php">←</a>
 
-      <img id="designerLogo" class="banner-logo" 
-           src="<?php echo $designer['profilePicture']; ?>">
+      <!-- صورة المصمم (تم إصلاحها 100%) -->
+      <img id="designerLogo" class="banner-logo"
+           src="/<?php echo $designer['profilePicture']; ?>" 
+           alt="Designer Picture">
 
       <div class="banner-head">
-        <h2 id="designerName" class="banner-name">
-          <?php echo $designer['name']; ?>
-        </h2>
+        <h2 class="banner-name"><?php echo $designer['name']; ?></h2>
 
-        <p id="designerRole" class="banner-role">
-          <?php echo $designer['specialty']; ?>
-        </p>
+        <p class="banner-role"><?php echo $designer['specialty']; ?></p>
 
         <div class="banner-stats">
           <div>
-            <strong id="reviewsCount"><?php echo $reviewsQuery->num_rows; ?></strong><br>Reviews
+            <strong><?php echo $reviewsQuery->num_rows; ?></strong><br>Reviews
           </div>
         </div>
 
         <?php if (!empty($designer['linkedinURL'])): ?>
-        <div id="linkWrap" class="banner-link-wrap">
-          <a id="profileLink" class="banner-link"
-             href="<?php echo $designer['linkedinURL']; ?>" target="_blank">↗</a>
+        <div class="banner-link-wrap">
+          <a class="banner-link" href="<?php echo $designer['linkedinURL']; ?>" target="_blank">↗️</a>
           <div class="banner-link-label">LinkedIn</div>
         </div>
         <?php endif; ?>
-
       </div>
     </section>
 
@@ -137,13 +150,13 @@ $reviewsQuery = $conn->query("
 
     <!-- Designs Section -->
     <section id="designsSection" class="cards">
-      <?php while ($d = $designsQuery->fetch_assoc()): ?>
+      <?php foreach ($designs as $d): ?>
       <div class="card">
-        <img src="<?php echo $d['image']; ?>" alt="">
+        <img src="/<?php echo $d['image']; ?>" alt="">
         <h4><?php echo $d['title']; ?></h4>
         <p><?php echo $d['description']; ?></p>
       </div>
-      <?php endwhile; ?>
+      <?php endforeach; ?>
     </section>
 
     <!-- Reviews Section -->
@@ -159,7 +172,6 @@ $reviewsQuery = $conn->query("
         <p><?php echo $r['comment']; ?></p>
       </div>
       <?php endwhile; ?>
-
     </section>
 
   </main>
@@ -167,7 +179,7 @@ $reviewsQuery = $conn->query("
   <footer>
     <div class="footer-content">
       <p class="footer-text">
-        © 2025 DECORIA — All rights reserved
+        ©️ 2025 DECORIA — All rights reserved
         | <a href="terms.html">Terms & Conditions</a>
       </p>
       <img src="../photo/darlfooter.jpeg" class="footer-image">
