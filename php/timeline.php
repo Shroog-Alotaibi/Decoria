@@ -2,7 +2,7 @@
 require_once "../php/config.php";
 check_login("Client");
 
-// Validate bookingID
+// Ensure booking ID exists
 if (!isset($_GET['bookingID'])) {
     die("No booking selected.");
 }
@@ -10,15 +10,16 @@ if (!isset($_GET['bookingID'])) {
 $bookingID = intval($_GET['bookingID']);
 $clientID = $_SESSION['userID'];
 
-// Fetch booking + timeline + designer info
+// Fetch booking info + designer info + timeline status
 $sql = "SELECT b.*, 
                bt.steps,
-               u.fullName AS designerName,
-               u.specialty AS designerSpecialty,
-               u.photoFileName AS designerPhoto
+               d.fullName AS designerName,
+               d.specialty AS designerSpecialty,
+               d.bio AS designerBio,
+               d.profilePic AS designerPic
         FROM booking b
         LEFT JOIN bookingtimeline bt ON bt.bookingID = b.bookingID
-        LEFT JOIN user u ON u.userID = b.designerID
+        LEFT JOIN user d ON d.userID = b.designerID
         WHERE b.bookingID = ? AND b.clientID = ?";
 
 $stmt = $conn->prepare($sql);
@@ -26,40 +27,20 @@ $stmt->bind_param("ii", $bookingID, $clientID);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
-    die("Booking not found or not yours.");
+if ($result->num_rows == 0) {
+    die("Booking not found or you are not authorized to view this timeline.");
 }
 
 $data = $result->fetch_assoc();
-$currentStep = $data["steps"] ?? "not_received";
 
-// Map step to display info
-$stepImages = [
-    "not_received" => "../photo/not-received.png",
-    "received"     => "../photo/request-received.png",
-    "in_progress"  => "../photo/InProgress.png",
-    "completed"    => "../photo/completed.png"
-];
+// Designer Info
+$designerName = $data["designerName"];
+$designerSpecialty = $data["designerSpecialty"];
+$designerBio = $data["designerBio"];
+$designerPic = !empty($data["designerPic"]) ? "../" . $data["designerPic"] : "../photo/placeholder.png";
 
-$stepTitles = [
-    "not_received" => "Request Not Received Yet",
-    "received"     => "Request Received",
-    "in_progress"  => "In Progress",
-    "completed"    => "Completed"
-];
-
-$stepDescriptions = [
-    "not_received" => "Your request has not been reviewed yet.",
-    "received"     => "Your designer has received your project request and is reviewing it.",
-    "in_progress"  => "Your designer is currently working on your project.",
-    "completed"    => "Your project has been completed and delivered."
-];
-
-// Progress bar steps: set active
-function activeCircle($stepName, $currentStep) {
-    $order = ["not_received", "received", "in_progress", "completed"];
-    return array_search($currentStep, $order) >= array_search($stepName, $order);
-}
+// Timeline Step
+$step = $data["steps"] ?? "not_received";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +50,6 @@ function activeCircle($stepName, $currentStep) {
   <title>Project Timeline - Decoria</title>
 
   <link rel="stylesheet" href="../css/decoria.css" />
-
 <style>
 /* YOUR CSS EXACTLY AS PROVIDED — UNCHANGED */
 .timeline-container {
@@ -231,104 +211,108 @@ function activeCircle($stepName, $currentStep) {
 </style>
 
 </head>
-<body>
 
+<body>
+<!-- HEADER -->
 <header class="site-header">
   <div class="container header-container">
     <div class="brand">
-      <img src="../photo/Logo.png.png" class="logo">
+      <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
     </div>
     <p class="welcome-text">Welcome to DECORIA</p>
     <div class="header-buttons"><button class="menu-toggle">☰</button></div>
   </div>
 </header>
 
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <span class="close-btn" id="closeSidebar">&times;</span>
-  <a href="home.html">Home</a>
-  <a href="designers.html">Designers</a>
-  <a href="booking.html" class="active">Booking</a>
-  <a href="profile.php">Profile</a>
-  <a href="meeting.html">Meeting</a>
-  <a href="settings.html">Settings</a>
+  <a href="home.php">Home</a>
+  <a href="designers.php">Designers</a>
+  <a href="booking.php">Booking</a>
+  <a href="myBookings.php" class="active">Timeline</a>
+  <a href="meeting.php">Meeting</a>
+  <a href="settings.php">Settings</a>
   <hr>
-  <a href="logout.php" class="logout">Logout</a>
+  <a href="../php/logout.php" class="logout">Logout</a>
 </div>
 
 <div id="overlay"></div>
 
+<!-- MAIN CONTENT -->
 <main class="container">
-<div class="timeline-container">
-  <h2 class="section-title">Project Timeline</h2>
+  <div class="timeline-container">
 
-  <!-- DESIGNER INFO -->
-  <div class="project-info">
-    <h3 class="project-title">Designer Info :</h3>
+    <h2 class="section-title">Project Timeline</h2>
 
-    <div class="designer-info">
-      <img src="../photo/<?= $data['designerPhoto'] ?>" class="designer-avatar">
-      <div>
-        <div class="designer-name"><?= $data['designerName'] ?></div>
-        <div class="designer-specialty"><?= $data['designerSpecialty'] ?></div>
+    <!-- DESIGNER INFO (DYNAMIC NOW!) -->
+    <div class="project-info">
+      <h3 class="project-title"> Designer Info :</h3>
+      
+      <div class="designer-info">
+        <img src="<?= $designerPic ?>" alt="Designer Avatar" class="designer-avatar">
+        <div>
+          <div class="designer-name"><?= htmlspecialchars($designerName) ?></div>
+          <div class="designer-specialty"><?= htmlspecialchars($designerSpecialty) ?></div>
+        </div>
+      </div>
+
+      <p><strong>Booking ID:</strong> #<?= $bookingID ?></p>
+      <p><strong>Date:</strong> <?= date("F d, Y", strtotime($data["dateCreated"])) ?></p>
+    </div>
+
+    <!-- STATUS DISPLAY BASED ON THE TIMELINE STEP -->
+    <div class="status-section">
+      <div class="status-card">
+        <?php if ($step === "not_received"): ?>
+            <img src="../photo/not-received.png" class="status-image">
+            <h3 class="status-title">Request Not Received Yet</h3>
+            <p class="status-description">Your designer has not received your request yet.</p>
+
+        <?php elseif ($step === "received"): ?>
+            <img src="../photo/request-received.png" class="status-image">
+            <h3 class="status-title">Request Received</h3>
+            <p class="status-description">Your designer received your request and is reviewing it.</p>
+
+        <?php elseif ($step === "in_progress"): ?>
+            <img src="../photo/InProgress.png" class="status-image">
+            <h3 class="status-title">In Progress</h3>
+            <p class="status-description">Your designer is working on your project.</p>
+
+        <?php elseif ($step === "completed"): ?>
+            <img src="../photo/completed.png" class="status-image">
+            <h3 class="status-title">Completed</h3>
+            <p class="status-description">Your project has been fully completed!</p>
+        <?php endif; ?>
+
+        <div class="status-indicator">Current Status</div>
       </div>
     </div>
 
-    <p><strong>Booking ID:</strong> #<?= $bookingID ?></p>
-    <p><strong>Date:</strong> <?= $data['bookingDate'] ?></p>
-  </div>
+    <!-- VISUAL TIMELINE -->
+    <div class="timeline-progress">
+      <div class="progress-step">
+        <div class="step-circle <?= $step === 'not_received' ? 'active' : '' ?>">1</div>
+        <div class="step-label <?= $step === 'not_received' ? 'active' : '' ?>">Request Not Received Yet</div>
+      </div>
+      
+      <div class="progress-step">
+        <div class="step-circle <?= $step === 'received' ? 'active' : '' ?>">2</div>
+        <div class="step-label <?= $step === 'received' ? 'active' : '' ?>">Request Received</div>
+      </div>
 
-  <!-- STATUS CARD -->
-  <div class="status-section">
-    <div class="status-card">
-      <img src="<?= $stepImages[$currentStep] ?>" class="status-image">
+      <div class="progress-step">
+        <div class="step-circle <?= $step === 'in_progress' ? 'active' : '' ?>">3</div>
+        <div class="step-label <?= $step === 'in_progress' ? 'active' : '' ?>">In Progress</div>
+      </div>
 
-      <h3 class="status-title"><?= $stepTitles[$currentStep] ?></h3>
-      <p class="status-description"><?= $stepDescriptions[$currentStep] ?></p>
-
-      <div class="status-indicator">Current Status</div>
-    </div>
-  </div>
-
-  <!-- PROGRESS BAR -->
-  <div class="timeline-progress">
-
-    <div class="progress-step">
-      <div class="step-circle <?= activeCircle("not_received", $currentStep) ? 'active' : '' ?>">1</div>
-      <div class="step-label <?= activeCircle("not_received", $currentStep) ? 'active' : '' ?>">Request Not Received Yet</div>
-    </div>
-
-    <div class="progress-step">
-      <div class="step-circle <?= activeCircle("received", $currentStep) ? 'active' : '' ?>">2</div>
-      <div class="step-label <?= activeCircle("received", $currentStep) ? 'active' : '' ?>">Request Received</div>
-    </div>
-
-    <div class="progress-step">
-      <div class="step-circle <?= activeCircle("in_progress", $currentStep) ? 'active' : '' ?>">3</div>
-      <div class="step-label <?= activeCircle("in_progress", $currentStep) ? 'active' : '' ?>">In Progress</div>
-    </div>
-
-    <div class="progress-step">
-      <div class="step-circle <?= activeCircle("completed", $currentStep) ? 'active' : '' ?>">4</div>
-      <div class="step-label <?= activeCircle("completed", $currentStep) ? 'active' : '' ?>">Completed</div>
+      <div class="progress-step">
+        <div class="step-circle <?= $step === 'completed' ? 'active' : '' ?>">4</div>
+        <div class="step-label <?= $step === 'completed' ? 'active' : '' ?>">Completed</div>
+      </div>
     </div>
 
   </div>
-
-  <!-- NEXT STEPS -->
-  <div class="next-steps">
-    <h4 class="next-steps-title">What to Expect Next:</h4>
-    <ul class="next-steps-list">
-      <li>Your designer will contact you soon.</li>
-      <li>You will receive updates automatically.</li>
-      <li>Feel free to reach out if you have questions.</li>
-    </ul>
-  </div>
-
-  <div class="contact-support">
-    <p>Have questions? <a href="mailto:support@decoria.com" class="contact-link">Contact our support team</a></p>
-  </div>
-
-</div>
 </main>
 
 <footer>
@@ -339,6 +323,5 @@ function activeCircle($stepName, $currentStep) {
 </footer>
 
 <script src="../js/sidebar.js"></script>
-
 </body>
 </html>
