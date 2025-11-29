@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_POST["designID"])) {
     exit();
 }
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 $designID   = (int) $_POST["designID"];
 
 $stmt = $conn->prepare("DELETE FROM design 
