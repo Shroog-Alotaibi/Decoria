@@ -2,7 +2,7 @@
 require_once "config.php";
 check_login('Designer');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 $specialty  = trim($_POST["specialty"] ?? "");
 $bio        = trim($_POST["bio"] ?? "");
 
