@@ -3,7 +3,7 @@ require_once "config.php";
 check_login('Designer');
 
 // We always use the logged-in designer
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 $sql = "SELECT name, specialty, bio, city, profilePicture, linkedin
         FROM designer
