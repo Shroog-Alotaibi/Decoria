@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,17 +60,8 @@
     }
     .logo:hover { transform: scale(1.05); }
 
-    .header-buttons { order: 2; }
-    .menu-toggle {
-      font-size: 30px;
-      color: var(--text);
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-    .menu-toggle:hover { color: var(--brand); transform: rotate(90deg); }
-
+    .header-buttons { order: 2; display: flex; align-items: center; }
+    
     .welcome-text {
       font-family: 'Playfair Display', serif;
       font-size: 22px;
@@ -78,6 +72,52 @@
       transform: translateX(-50%);
       white-space: nowrap;
     }
+
+    /* Login/Register buttons */
+    .auth-buttons {
+      display: inline-flex;
+      gap: 10px;
+      margin-right: 15px;
+    }
+
+    .auth-btn {
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 15px;
+    }
+
+    .auth-btn.login {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .auth-btn.register {
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid var(--brand);
+    }
+
+    .auth-btn.login:hover {
+      background: var(--primary-btn-hover);
+    }
+
+    .auth-btn.register:hover {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .menu-toggle {
+      font-size: 30px;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: .3s;
+    }
+    .menu-toggle:hover { color: var(--brand); transform: rotate(90deg); }
 
     /* ===== Sidebar ===== */
     .sidebar {
@@ -109,9 +149,8 @@
     .close-btn {
       align-self: flex-end;
       font-size: 26px;
-      color: var(--text);
       cursor: pointer;
-      transition: 0.3s;
+      transition: .3s;
     }
     .close-btn:hover { color: var(--brand); transform: rotate(90deg); }
 
@@ -146,18 +185,12 @@
     .hero::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.35);
+      inset: 0;
+      background: rgba(0,0,0,0.35);
     }
 
-    .hero h2, .hero p {
-      position: relative;
-      z-index: 2;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    .hero h2 { font-size: 40px; margin-bottom: 10px; }
-    .hero p { font-size: 18px; max-width: 600px; }
+    .hero h2 { font-size: 40px; margin-bottom: 10px; position: relative; }
+    .hero p { font-size: 18px; max-width: 600px; position: relative; }
 
     /* ===== User Section ===== */
     .user-section {
@@ -175,13 +208,9 @@
       width: 280px;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
+      transition: .3s;
     }
-
-    .user-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-    }
+    .user-card:hover { transform: translateY(-6px); }
 
     .user-card h3 { color: var(--brand); margin-bottom: 10px; }
     .user-card p { color: var(--muted); margin-bottom: 15px; }
@@ -192,178 +221,123 @@
       text-decoration: none;
       padding: 10px 20px;
       border-radius: 5px;
-      transition: background 0.3s;
     }
     .user-card a:hover { background: var(--primary-btn-hover); }
 
     /* ===== Footer ===== */
-    footer {
-      margin-top: 40px;
-      background: #fffaf3;
-      border-top: 1px solid var(--border);
-      position: relative;
-    }
+    footer { margin-top: 40px; background: #fffaf3; border-top: 1px solid var(--border); }
     .footer-image {
-      width: 100%;
-      height: 250px;
-      object-fit: cover;
-      display: block;
+      width: 100%; height: 250px; object-fit: cover;
     }
-    .footer-content { position: relative; text-align: center; }
+    .footer-content { text-align: center; position: relative; }
     .footer-text {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgb(218, 218, 218);
-      font-size: 16px;
-      z-index: 10;
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      color: rgb(218,218,218);
     }
-    .footer-text a { color: white; text-decoration: underline; margin: 0 5px; }
-
-    .popup-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 5000;
-    }
-    .popup {
-      background: white;
-      padding: 25px 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .popup h3 { color: var(--brand); margin-bottom: 10px; }
-    .popup p { color: var(--text); margin: 8px 0; }
-    .popup .email { font-weight: bold; color: var(--brand); }
-    .popup button {
-      background: var(--brand);
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      margin-top: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .popup button:hover { background: var(--primary-btn-hover); }
-    .auth-buttons {
-  display: inline-flex;
-  gap: 10px;
-  margin-right: 15px;
-}
-
-.auth-btn {
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  font-size: 15px;
-}
-
-.auth-btn.login {
-  background: var(--brand);
-  color: #fff;
-}
-
-.auth-btn.register {
-  background: #fff;
-  color: var(--brand);
-  border: 1px solid var(--brand);
-}
-
-.auth-btn.login:hover {
-  background: var(--primary-btn-hover);
-}
-
-.auth-btn.register:hover {
-  background: var(--brand);
-  color: #fff;
-}
-
   </style>
 </head>
+
 <body>
 
+  <!-- HEADER -->
   <header class="site-header">
     <div class="container header-container">
+
       <div class="brand">
-        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+        <img src="../photo/Logo.png.png" class="logo">
       </div>
+
       <p class="welcome-text">Welcome to DECORIA</p>
+
       <div class="header-buttons">
-          <div class="auth-buttons">
-    <a href="login.php" class="auth-btn login">Login</a>
-    <a href="register.php" class="auth-btn register">Register</a>
-  </div>
+
+        <div class="auth-buttons">
+          <?php if(isset($_SESSION['username'])): ?>
+              <span style="font-weight:700; color:var(--brand); margin-right:10px;">
+                Hello, <?php echo $_SESSION['username']; ?>
+              </span>
+          <?php else: ?>
+              <a href="login.php" class="auth-btn login">Login</a>
+              <a href="register.php" class="auth-btn register">Register</a>
+          <?php endif; ?>
+        </div>
+
         <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>
 
-  <!-- Sidebar Menu -->
+  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
+
     <a href="designers.php">Designers</a>
-    <a href="mybookings.php" class="active">Booking</a>
+    <a href="mybookings.php">Booking</a>
     <a href="Designer-timeline.php">Timeline</a>
     <a href="meeting.php">Meeting</a>
     <a href="settings.php">Settings</a>
     <hr>
-    
+
+    <?php if(isset($_SESSION['username'])): ?>
+        <a href="logout.php" style="color:red; font-weight:bold;">Logout</a>
+    <?php else: ?>
+        <a href="login.php">Login</a>
+        <a href="register.php">Register</a>
+    <?php endif; ?>
   </div>
+
   <div id="overlay"></div>
 
+  <!-- HERO -->
   <section class="hero" id="hero">
     <h2>Design Beyond Walls</h2>
     <p>Connecting clients with top-tier interior designers to bring visions to life — from concept to creation.</p>
   </section>
 
+  <!-- USER SECTION -->
   <section class="user-section">
     <div class="user-card">
       <h3>For Clients</h3>
       <p>Find your perfect designer and book your dream project.</p>
-      <a href="designers.html">Start Exploring</a>
+      <a href="designers.php">Start Exploring</a>
     </div>
+
     <div class="user-card">
       <h3>For Designers</h3>
       <p>Join DECORIA and share your creative vision with clients.</p>
       <a href="#" id="joinDesigner">Join DECORIA</a>
     </div>
   </section>
-<footer>
+
+  <!-- FOOTER -->
+  <footer>
     <div class="footer-content">
       <p class="footer-text">
-        © 2025 DECORIA — All rights reserved
-        | <a href="terms.html">Terms & Conditions</a>
+        ©️ 2025 DECORIA — All rights reserved |
+        <a href="terms.html" style="color:white;">Terms & Conditions</a>
       </p>
-      <img src="../photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
+      <img src="../photo/darlfooter.jpeg" class="footer-image">
     </div>
   </footer>
 
   <script>
+    // Sidebar
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
-    const menuToggle = document.querySelector(".menu-toggle");
-    const closeSidebar = document.getElementById("closeSidebar");
-
-    menuToggle.addEventListener("click", () => {
+    document.querySelector(".menu-toggle").onclick = () => {
       sidebar.classList.add("open");
       overlay.classList.add("active");
-    });
-    closeSidebar.addEventListener("click", () => {
+    };
+    document.getElementById("closeSidebar").onclick = () => {
       sidebar.classList.remove("open");
       overlay.classList.remove("active");
-    });
-    overlay.addEventListener("click", () => {
+    };
+    overlay.onclick = () => {
       sidebar.classList.remove("open");
       overlay.classList.remove("active");
-    });
+    };
 
-    // Background slideshow
+    // Hero slideshow
     const hero = document.getElementById("hero");
     const images = ["../photo/room44.jpeg", "../photo/room33.jpeg"];
     let current = 0;
@@ -372,22 +346,6 @@
       current = (current + 1) % images.length;
       hero.style.backgroundImage = `url(${images[current]})`;
     }, 4000);
-
-    // Popup for Join DECORIA
-    document.getElementById("joinDesigner").addEventListener("click", (e) => {
-      e.preventDefault();
-      const box = document.createElement("div");
-      box.innerHTML = `
-        <div class="popup">
-          <h3>Become a DECORIA Designer</h3>
-          <p>To complete your registration, please send your name, phone number, and LinkedIn link to:</p>
-          <p class="email">decoria.team@gmail.com</p>
-          <button id="closePopup">Close</button>
-        </div>`;
-      document.body.appendChild(box);
-      box.classList.add("popup-container");
-      document.getElementById("closePopup").onclick = () => box.remove();
-    });
   </script>
 
 </body>
