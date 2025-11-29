@@ -245,21 +245,24 @@ $step = $data["steps"] ?? "not_received";
 
     <h2 class="section-title">Project Timeline</h2>
 
-    <!-- DESIGNER INFO (DYNAMIC NOW!) -->
+    <!-- DESIGNER INFO -->
     <div class="project-info">
-      <h3 class="project-title"> Designer Info :</h3>
-      
-      <div class="designer-info">
-        <img src="<?= $designerPic ?>" alt="Designer Avatar" class="designer-avatar">
-        <div>
-          <div class="designer-name"><?= htmlspecialchars($designerName) ?></div>
-          <div class="designer-specialty"><?= htmlspecialchars($designerSpecialty) ?></div>
-        </div>
-      </div>
-
-      <p><strong>Booking ID:</strong> #<?= $bookingID ?></p>
-      <p><strong>Date:</strong> <?= date("F d, Y", strtotime($data["dateCreated"])) ?></p>
+  <h3 class="project-title"> Designer Info :</h3>
+  
+  <div class="designer-info">
+    <img src="<?= $designerPic ?>" alt="Designer Avatar" class="designer-avatar">
+    <div>
+      <div class="designer-name"><?= htmlspecialchars($designerName) ?></div>
+      <div class="designer-specialty"><?= htmlspecialchars($designerSpecialty) ?></div>
     </div>
+  </div>
+  
+  <p><strong>Last Update:</strong>
+      <?= date("F j, Y, g:i a", strtotime($data['lastUpdate'])) ?>
+  </p>
+</div>
+
+
 
     <!-- STATUS DISPLAY BASED ON THE TIMELINE STEP -->
     <div class="status-section">
