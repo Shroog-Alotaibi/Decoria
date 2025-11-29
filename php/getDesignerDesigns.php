@@ -2,7 +2,7 @@
 require_once "config.php";
 check_login('Designer');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("SELECT designID, title, description, image 
                         FROM design
