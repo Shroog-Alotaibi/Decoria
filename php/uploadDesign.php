@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
-$designerID  = $_SESSION['userID'];
+$designerID  = $_SESSION['user_id'];
 $title       = trim($_POST["title"] ?? "");
 $description = trim($_POST["description"] ?? "");
 
