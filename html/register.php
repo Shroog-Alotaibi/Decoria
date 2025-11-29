@@ -1,4 +1,6 @@
 <?php
+session_start(); 
+
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -31,7 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 VALUES ('$name', '$email', '$hashedPassword', 'Customer', '$phone', '$gender', '$dob', '$address')";
 
         if ($conn->query($sql) === TRUE) {
-            $message = "<span style='color:green;'>Registered Successfully!</span>";
+            $userID = $conn->insert_id;
+$_SESSION['userID'] = $userID;
+
+            // 🎯 نحفظ جلسة المستخدم
+            $_SESSION['username'] = $name;
+            $_SESSION['email'] = $email;
+            $_SESSION['role'] = "Customer";
+
+            // 🎯 بعد التسجيل يروح مباشرة للهوم
+            header("Location: home.php");
+            exit;
+
         } else {
             $message = "<span style='color:red;'>Error while saving data!</span>";
         }
@@ -200,7 +213,7 @@ footer {
 <footer>
   <div class="footer-content">
     <p class="footer-text">
-      © 2025 DECORIA — All rights reserved |
+      ©️ 2025 DECORIA — All rights reserved |
       <a href="terms.html">Terms & Conditions</a>
     </p>
     <img src="../photo/darlfooter.jpeg" class="footer-image">
