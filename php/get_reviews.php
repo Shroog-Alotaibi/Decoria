@@ -2,7 +2,7 @@
 require_once "config.php";
 check_login('Designer');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 $sql = "SELECT r.rating, r.comment, r.reviewDate, u.name AS clientName
         FROM review r
