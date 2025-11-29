@@ -5,7 +5,7 @@ require_once "../php/config.php";
 check_login('Designer');
 
 // Designer ID comes from session
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
