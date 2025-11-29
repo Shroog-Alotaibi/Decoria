@@ -19,7 +19,7 @@ if ($status === "not_received") {
 // Ensure designer owns this booking
 $sql = "SELECT bookingID FROM booking WHERE bookingID = ? AND designerID = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $bookingID, $_SESSION['userID']);
+$stmt->bind_param("ii", $bookingID, $_SESSION['user_id']);
 $stmt->execute();
 $check = $stmt->get_result();
 
