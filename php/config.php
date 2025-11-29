@@ -30,13 +30,13 @@ function redirect_to($location) {
  * $role_required example: 'Designer'
  */
 function check_login($role_required = '') {
-    if (!isset($_SESSION['userID'])) {
+    if (!isset($_SESSION['user_id'])) {
         redirect_to('login.php');
     }
     
     if (
         $role_required !== '' &&
-        (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)
+        (!isset($_SESSION['role']) || $_SESSION['role'] !== $role_required)
     ) {
         // User logged in but with wrong role
         redirect_to('home.html');
