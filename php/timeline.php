@@ -3,7 +3,7 @@ require_once "../config.php";
 session_start();
 check_login("Customer");
 
-$clientID = $_SESSION['userID'];
+$clientID = $_SESSION['user_id'];
 
 if (!isset($_GET['bookingID'])) {
     die("No booking ID provided.");
