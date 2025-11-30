@@ -5,7 +5,7 @@ session_start();
 // Only designers can access this page
 check_login('Designer');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 /* ----------------------------------------
    FETCH DESIGNER PROFILE INFO
