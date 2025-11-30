@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once "config.php"; // يشمل الاتصال + session_start + check_login
 
 // 1) تأكد أنه مسجل دخول (أي مستخدم)
@@ -23,107 +25,107 @@ if (!$user) {
     die("User not found. Check userID.");
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <title>Decoria | Settings</title>
+  <title>DECORIA | Personal Settings</title>
 
   <link rel="stylesheet" href="../css/decoria.css">
   <link rel="stylesheet" href="../css/designers.css">
   <link rel="stylesheet" href="../css/settings.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
 
+<!-- Header -->
 <header class="site-header">
     <div class="container header-container">
-        <div class="brand">
-            <img src="../photo/Logo.png.png" class="logo">
-        </div>
-        <p class="welcome-text">Welcome to DECORIA</p>
+      <div class="brand">
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+      </div>
+      <p class="welcome-text">Welcome to DECORIA</p>
+      <div class="header-buttons">
+        <button class="menu-toggle" aria-label="Open menu">☰</button>
+      </div>
     </div>
 </header>
 
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+     <?php include("menu.php"); ?>
+</div>
+
+<div id="overlay"></div>
+
 <main class="container">
-    <h2 class="section-title">Settings</h2>
 
-    <main class="settings-page">
+<h2 class="section-title">Personal Settings</h2>
 
-        <section class="card">
-            <h2>Personal Information</h2>
+<!-- RESULT MESSAGE -->
+<div id="messageBox"></div>
 
-            <div class="account-info-item">
-                <span>Name:</span>
-                <span><?= htmlspecialchars($user['name']) ?></span>
-            </div>
+<!-- تم تغيير الـ <main> إلى <div> -->
+<div class="settings-page">
 
-            <div class="account-info-item">
-                <span>Email:</span>
-                <span><?= htmlspecialchars($user['email']) ?></span>
-            </div>
+<section class="card">
+<h2>Personal Account Settings</h2>
 
-            <div class="account-info-item">
-                <span>Phone Number:</span>
-                <span>+966 <?= htmlspecialchars($user['phoneNumber']) ?></span>
-            </div>
+<div class="account-info-item">
+    <label>Username:</label>
+    <input id="name" value="<?= htmlspecialchars($user['name']) ?>">
+</div>
 
-            <div class="account-info-item">
-                <span>Date of Birth:</span>
-                <span><?= htmlspecialchars($user['DOB']) ?></span>
-            </div>
+<div class="account-info-item">
+    <label>Email:</label>
+    <input id="email" value="<?= htmlspecialchars($user['email']) ?>">
+</div>
 
-            <div class="account-info-item">
-                <span>Gender:</span>
-                <span><?= htmlspecialchars($user['gender']) ?></span>
-            </div>
+<div class="account-info-item">
+    <label>Phone Number:</label>
+    <input id="phone" value="<?= htmlspecialchars($user['phoneNumber']) ?>">
+</div>
 
-            <div class="account-info-item">
-                <span>Address:</span>
-                <span><?= htmlspecialchars($user['address']) ?></span>
-            </div>
-        </section>
+<div class="account-info-item">
+    <label>Password:</label>
+    <span>*********</span>
+    <a href="password.php">
+        <i class="fas fa-edit edit-icon" style="color:#3b4d3b;"></i>
+    </a>
+</div>
 
-        <section class="card">
-            <h2>Personal Account Settings</h2>
+<button class="edit-info-btn" onclick="saveChanges(<?= $user['userID'] ?>)">Save Changes</button>
 
-            <div class="account-info-item">
-                <span>Username:</span>
-                <span><?= htmlspecialchars($user['name']) ?></span>
-            </div>
+<div id="errorMessage" 
+     style="
+        margin-top:20px;
+        padding:12px 18px;
+        border-radius:10px;
+        font-weight:600;
+        font-size:16px;
+        text-align:center;
+        background:#fdecea;
+        color:#b71c1c;
+        border:1px solid #f5c6cb;
+        box-shadow:0 2px 6px rgba(0,0,0,0.05);
+        width: fit-content;
+        margin-left:auto;
+        margin-right:auto;
+        display:none;
+     ">
+    <span id="errorText"></span>
+</div>
 
-            <div class="account-info-item">
-                <span>Email:</span>
-                <span><?= htmlspecialchars($user['email']) ?></span>
-            </div>
+</section>
 
-            <div class="account-info-item">
-                <span>Phone Number:</span>
-                <span>+966 <?= htmlspecialchars($user['phoneNumber']) ?></span>
-            </div>
-
-            <div class="account-info-item">
-                <span>Password:</span>
-                <span>********</span>
-            </div>
-
-           <button class="edit-info-btn" onclick="window.location.href='settings-personal.php'">Edit</button>
-        </section>
-
-    </main>
+</div> <!-- نهاية settings-page -->
 
 </main>
 
-<footer>
-  <div class="footer-content">
-    <p class="footer-text">
-      © 2025 DECORIA — All rights reserved |
-      <a href="terms.html">Terms & Conditions</a>
-    </p>
-    <img src="../photo/darlfooter.jpeg" class="footer-image">
-  </div>
-</footer>
+<script src="../js/settings-personal.js"></script>
+<script src="../js/sidebar.js"></script>
 
 </body>
 </html>

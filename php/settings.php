@@ -37,19 +37,33 @@ if (!$user) {
 
 <body>
 
+<!-- Header -->
 <header class="site-header">
     <div class="container header-container">
-        <div class="brand">
-            <img src="../photo/Logo.png.png" class="logo">
-        </div>
-        <p class="welcome-text">Welcome to DECORIA</p>
+      <div class="brand">
+        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+      </div>
+      <p class="welcome-text">Welcome to DECORIA</p>
+      <div class="header-buttons">
+        <button class="menu-toggle" aria-label="Open menu">☰</button>
+      </div>
     </div>
 </header>
 
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+     <?php include("menu.php"); ?>
+</div>
+
+<div id="overlay"></div>
+
 <main class="container">
+    
     <h2 class="section-title">Settings</h2>
 
-    <main class="settings-page">
+    <!-- تم تغيير الـ <main> إلى <div> هنا -->
+    <div class="settings-page">
 
         <section class="card">
             <h2>Personal Information</h2>
@@ -111,7 +125,7 @@ if (!$user) {
            <button class="edit-info-btn" onclick="window.location.href='settings-personal.php'">Edit</button>
         </section>
 
-    </main>
+    </div> <!-- نهاية الـ settings-page -->
 
 </main>
 
@@ -124,6 +138,8 @@ if (!$user) {
     <img src="../photo/darlfooter.jpeg" class="footer-image">
   </div>
 </footer>
+
+<script src="../js/sidebar.js"></script>
 
 </body>
 </html>
