@@ -1,11 +1,11 @@
 <?php
-require_once "../config.php";
+require_once "config.php";
 session_start();
 check_login('Designer');
 
 header('Content-Type: application/json');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 $designID   = intval($_POST['designID'] ?? 0);
 
 if ($designID <= 0) {
