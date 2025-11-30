@@ -143,7 +143,7 @@ $ratingMap = [
               <?php endforeach; ?>
             </div>
 
-            <a class="view-btn" href="designerInfo.php?id=<?php echo $designerID; ?>">
+            <a class="view-btn" href="designerinfo.php?id=<?php echo $designerID; ?>">
               View Profile
             </a>
           </article>
@@ -166,7 +166,7 @@ $ratingMap = [
 
   <!-- JS -->
   <script src="../js/sidebar.js"></script>
-  <script src="../js/designers.js" defer></script>
+  
 </body>
 </html>
 <?php
