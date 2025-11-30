@@ -39,6 +39,6 @@ function check_login($role_required = '') {
         (!isset($_SESSION['role']) || $_SESSION['role'] !== $role_required)
     ) {
         // User logged in but with wrong role
-        redirect_to('home.html');
+        redirect_to('home.php');
     }
 }
