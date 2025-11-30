@@ -29,7 +29,7 @@ $profilePicture = $current['profilePicture'];
 
 // If a new image uploaded
 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../photo/designer/';
+    $uploadDir = '../photo/profiles/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
