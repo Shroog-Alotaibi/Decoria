@@ -1,12 +1,13 @@
 <?php
 session_start();
 
-// عدلي المسار حسب ملف الكونفيق عندكم لو مختلف
-$conn = new mysqli("localhost", "root", "root", "decoria", 8889);
+// الاتصال بقاعدة البيانات
+$conn = new mysqli("localhost", "root", "root", "decoria");
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,35 +18,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'Please enter both email and password.';
     } else {
-        // نجهز الاستعلام
-        $stmt = $connection->prepare("
+
+        $stmt = $conn->prepare("
             SELECT userID, name, role, password 
             FROM user 
             WHERE email = ?
             LIMIT 1
         ");
+
         if ($stmt) {
             $stmt->bind_param('s', $email);
             $stmt->execute();
             $result = $stmt->get_result();
 
             if ($row = $result->fetch_assoc()) {
+
                 // كلمة السر مخزنة كـ MD5
                 if (md5($password) === $row['password']) {
+
                     // تسجيل الدخول ناجح
                     $_SESSION['user_id'] = (int)$row['userID'];
                     $_SESSION['name']    = $row['name'];
                     $_SESSION['role']    = $row['role'];
 
-                    // توجيه حسب الدور
-                    if ($row['role'] === 'Designer') {
-                        // صفحة المصمم (عدليها لو عندكم صفحة ثانية للمصمم)
-                        header('Location: designers.php');
-                    } else {
-                        // صفحة العميل / الهوم
-                        header('Location: home.html');
-                    }
+                    // 🔥 التوجيه: الكل يروح على الهوم بيج
+                    header('Location: ../html/home.php');
                     exit();
+
                 } else {
                     $error = 'Invalid email or password.';
                 }
@@ -204,7 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="login-container">
     <h1>Welcome Back</h1>
 
-    <!-- نخلي الفورم يرسل لنفس الصفحة -->
     <form action="login.php" method="post">
       <input type="email" name="email" placeholder="Email" required>
       <input type="password" name="password" placeholder="Password" required>
@@ -217,9 +215,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="links">
       <p>Don't have an account? <a href="register.html">Register here</a></p>
-      <p><a href="home.html">← Back to Home</a></p>
+      <p><a href="../html/home.php">← Back to Home</a></p>
     </div>
   </div>
 </body>
 </html>
-
