@@ -395,7 +395,7 @@ $designerID = $_SESSION['user_id'];
 
     <!-- Profile banner -->
     <section class="profile-banner" id="profileBanner">
-      <a class="back-arrow" href="designers.html" title="Back to Designers">←</a>
+      <a class="back-arrow" href="designers.php" title="Back to Designers">←</a>
 
       <!-- Designer logo -->
       <img id="designerLogo" class="banner-logo" src="../photo/placeholder.png" alt="Designer Logo">
