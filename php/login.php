@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="links">
       <p>Don't have an account? <a href="register.php">Register here</a></p>
-      <p><a href="home.html">← Back to Home</a></p>
+      <p><a href="home.php">← Back to Home</a></p>
     </div>
   </div>
 </body>
