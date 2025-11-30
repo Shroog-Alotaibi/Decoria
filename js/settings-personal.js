@@ -1,109 +1,76 @@
-let originalValues = {};
+function saveChanges(userID) {
 
-function enableField(field) {
-  const inputField = document.getElementById(field);
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
 
-  if (inputField) {
-    originalValues[field] = inputField.textContent;
-    inputField.contentEditable = true;
-    inputField.style.textAlign = "center"; // Center text inside input
-    inputField.focus();
+    const errorBox = document.getElementById("errorMessage");
+    const errorText = document.getElementById("errorText");
 
-    // Apply styles for light mode only
-    inputField.style.backgroundColor = "#fff"; // White background
-    inputField.style.color = "#333"; // Dark text color
-    inputField.style.border = "1px solid #ccc"; // Light border
-  }
-}
+    // إخفاء الرسالة أول
+    errorBox.style.display = "none";
 
-function validateInputs() {
-  const email = document.getElementById('email').textContent;
-  const phone = document.getElementById('phone').textContent.trim();
-  let errorMessage = '';
+    // ============================
+    //     VALIDATION
+    // ============================
 
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  if (!emailPattern.test(email)) {
-    errorMessage = "📧 The email must be in the correct format: gmail.com@";
-  }
+    if (name === "" || email === "" || phone === "") {
+        return showError("⚠️ All fields are required");
+    }
 
-  if (!errorMessage) {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailPattern.test(email)) {
+        return showError("📧 Email must be a valid Gmail address (example@gmail.com)");
+    }
+
     const phonePattern = /^[0-9]{10}$/;
     if (!phonePattern.test(phone)) {
-      errorMessage = "📱 The phone number must be 10 digits long and contain no symbols!";
+        return showError("📱 Phone number must be exactly 10 digits");
     }
-  }
 
-  if (!errorMessage && phone.length !== 10) {
-    errorMessage = "📱 The phone number must consist of exactly 10 digits.";
-  }
+    // ============================
+    //        AJAX REQUEST
+    // ============================
 
-  if (errorMessage) {
-    showErrorText(errorMessage);
-    return false;
-  }
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "update-user.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  const errorMessageElement = document.getElementById("errorMessage");
-  errorMessageElement.style.display = "none";
-  
-  return true;
+    xhr.onreadystatechange = function () {
+
+        if (xhr.readyState === 4 && xhr.status === 200) {
+
+            // إذا نجح التحديث
+            if (xhr.responseText.trim() === "SUCCESS") {
+                alert("Saved successfully ✔️");
+            } 
+            else {
+                showError("❌ Error: " + xhr.responseText);
+            }
+        }
+    };
+
+    xhr.send(
+        "userID=" + userID +
+        "&name=" + encodeURIComponent(name) +
+        "&email=" + encodeURIComponent(email) +
+        "&phone=" + encodeURIComponent(phone)
+    );
 }
 
-function showErrorText(message) {
-  const errorMessageElement = document.getElementById("errorMessage");
-  errorMessageElement.textContent = message;
-  errorMessageElement.style.color = "#e74c3c";
-  errorMessageElement.style.backgroundColor = "#f8d7da";
-  errorMessageElement.style.padding = "10px";
-  errorMessageElement.style.borderRadius = "10px";
-  errorMessageElement.style.fontWeight = "bold";
-  errorMessageElement.style.fontSize = "16px";
-  errorMessageElement.style.textAlign = "center";
-  errorMessageElement.style.display = "block";
 
-  setTimeout(() => {
-    errorMessageElement.style.display = "none";
-  }, 3000);
-}
+// ============================
+//    SHOW ERROR FUNCTION
+// ============================
 
-function saveChanges() {
-  const errorMessageElement = document.getElementById("errorMessage");
-  errorMessageElement.style.display = "none";
+function showError(msg) {
+    const box = document.getElementById("errorMessage");
+    const text = document.getElementById("errorText");
 
-  if (validateInputs()) {
-    showConfirmationPopup("Are you sure you want to save the changes?", () => {
-      const email = document.getElementById('email').textContent;
-      const phone = document.getElementById('phone').textContent;
+    text.textContent = msg;
+    box.style.display = "block";
 
-      console.log('Email:', email);
-      console.log('Phone:', phone);
-    });
-  }
-}
-
-function showConfirmationPopup(message, onConfirm) {
-  const popup = document.getElementById("confirmPopup");
-  const msg = popup.querySelector(".confirm-message");
-  const yesBtn = document.getElementById("confirmYes");
-  const noBtn = document.getElementById("confirmNo");
-
-  msg.textContent = message;
-  popup.style.display = "flex";
-
-  yesBtn.onclick = () => {
-    popup.style.display = "none";
-    onConfirm();
-  };
-
-  noBtn.onclick = () => {
-    const fieldsToReset = Object.keys(originalValues);
-    fieldsToReset.forEach(field => {
-      const inputField = document.getElementById(field);
-      if (inputField) {
-        inputField.textContent = originalValues[field];
-        inputField.style.backgroundColor = "";
-        inputField.contentEditable = false;
-      }
-    });
-    popup.style.display = "none";
-  };
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 3000);
 }

@@ -1,20 +1,22 @@
 <?php
-session_start();
-include("config.php");
+require_once "config.php"; // يشمل الاتصال + session_start + check_login
 
+// 1) تأكد أنه مسجل دخول (أي مستخدم)
+check_login();
 
-if (!isset($_SESSION['user_id']) || 
-   ($_SESSION['user_type'] !== 'client' && $_SESSION['user_type'] !== 'designer')) {
-
-    header("Location: login.php?error=unauthorized");
-    exit();
+// 2) السماح فقط إذا كان الدور Customer أو Designer
+if (
+    !isset($_SESSION['role']) ||
+    ($_SESSION['role'] !== 'Customer' && $_SESSION['role'] !== 'Designer')
+) {
+    redirect_to('home.php');
 }
 
-
+// 3) جلب بيانات المستخدم الحالي
 $user_id = intval($_SESSION['user_id']);
 
 $user_query = "SELECT * FROM user WHERE userID = $user_id";
-$user_result = mysqli_query($connection, $user_query);
+$user_result = mysqli_query($conn, $user_query);
 $user = mysqli_fetch_assoc($user_result);
 
 if (!$user) {
@@ -105,6 +107,7 @@ if (!$user) {
                 <span>Password:</span>
                 <span>********</span>
             </div>
+
            <button class="edit-info-btn" onclick="window.location.href='settings-personal.php'">Edit</button>
         </section>
 
