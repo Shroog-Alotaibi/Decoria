@@ -70,7 +70,7 @@ $ratingMap = [
   <!-- Sidebar Menu -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
-    <a href="home.html">Home</a>
+    <a href="home.php">Home</a>
     <a href="designers.php" class="active">Designers</a>
     <a href="booking.php">Booking</a>
     <a href="timeline.php">Timeline</a>
