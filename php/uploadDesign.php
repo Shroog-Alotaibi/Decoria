@@ -1,49 +1,61 @@
 <?php
-require_once "config.php";
+require_once "../config.php";
+session_start();
 check_login('Designer');
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    echo json_encode(["status" => "error", "msg" => "invalid request"]);
-    exit();
+header('Content-Type: application/json');
+
+$designerID = $_SESSION['userID'];
+
+$title = trim($_POST['title'] ?? '');
+$description = trim($_POST['description'] ?? '');
+
+if ($title === '' || $description === '' || !isset($_FILES['image'])) {
+    echo json_encode(['success' => false, 'error' => 'Missing fields']);
+    exit;
 }
 
-$designerID  = $_SESSION['user_id'];
-$title       = trim($_POST["title"] ?? "");
-$description = trim($_POST["description"] ?? "");
-
-if ($title === "" || $description === "" || empty($_FILES["image"]["name"])) {
-  echo json_encode(["status" => "error", "msg" => "missing fields"]);
-  exit();
+// Handle image upload
+$uploadDir = '../photo/designs/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
 }
 
-$targetDir = "../photo/uploads/";
-if (!file_exists($targetDir)) {
-    mkdir($targetDir, 0777, true);
+$img      = $_FILES['image'];
+$ext      = pathinfo($img['name'], PATHINFO_EXTENSION);
+$ext      = strtolower($ext);
+$allowed  = ['jpg','jpeg','png','gif','webp'];
+
+if (!in_array($ext, $allowed)) {
+    echo json_encode(['success' => false, 'error' => 'Invalid image type']);
+    exit;
 }
 
-$fileName   = time() . "_" . basename($_FILES["image"]["name"]);
-$targetFile = $targetDir . $fileName;
+$filename     = 'design_' . $designerID . '_' . time() . '.' . $ext;
+$targetPath   = $uploadDir . $filename;
+$relativePath = 'photo/designs/' . $filename; // stored in DB
 
-if (!move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-    echo json_encode(["status" => "error", "msg" => "upload failed"]);
-    exit();
+if (!move_uploaded_file($img['tmp_name'], $targetPath)) {
+    echo json_encode(['success' => false, 'error' => 'Failed to save image']);
+    exit;
 }
 
-$imagePath  = "../photo/uploads/" . $fileName;
-$uploadDate = date("Y-m-d");
-
-// designerID, title, description, image, uploadDate
-$stmt = $conn->prepare("INSERT INTO design (designerID, title, description, image, uploadDate)
-                        VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("issss", $designerID, $title, $description, $imagePath, $uploadDate);
+// Insert into DB
+$today = date('Y-m-d');
+$sql   = "INSERT INTO design (title, description, image, designerID, uploadDate)
+          VALUES (?, ?, ?, ?, ?)";
+$stmt  = $conn->prepare($sql);
+$stmt->bind_param("sssds", $title, $description, $relativePath, $designerID, $today);
 $stmt->execute();
-
-$designID = $stmt->insert_id;
+$newID = $stmt->insert_id;
 
 echo json_encode([
-    "status"      => "success",
-    "designID"    => $designID,
-    "title"       => $title,
-    "description" => $description,
-    "image"       => $imagePath
+    'success' => true,
+    'design'  => [
+        'designID'  => $newID,
+        'title'     => $title,
+        'description'=> $description,
+        'imageUrl'  => '../' . $relativePath,
+        'uploadDate'=> $today
+    ]
 ]);
