@@ -1,27 +1,31 @@
 <?php
-require_once "config.php";
+require_once "../config.php";
+session_start();
 check_login('Designer');
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_POST["designID"])) {
-    echo "error";
-    exit();
+header('Content-Type: application/json');
+
+$designerID = $_SESSION['userID'];
+
+$designID    = intval($_POST['designID'] ?? 0);
+$title       = trim($_POST['title'] ?? '');
+$description = trim($_POST['description'] ?? '');
+
+if ($designID <= 0 || $title === '' || $description === '') {
+    echo json_encode(['success' => false, 'error' => 'Invalid data']);
+    exit;
 }
 
-$designerID = $_SESSION['user_id'];
-$designID   = (int) $_POST["designID"];
-$title      = trim($_POST["title"] ?? "");
-$desc       = trim($_POST["description"] ?? "");
-
-if ($title === "" || $desc === "") {
-    echo "error";
-    exit();
-}
-
-// extra safety: ensure this design belongs to this designer
-$stmt = $conn->prepare("UPDATE design 
-                        SET title = ?, description = ?
-                        WHERE designID = ? AND designerID = ?");
-$stmt->bind_param("ssii", $title, $desc, $designID, $designerID);
+// Ensure the design belongs to this designer
+$sql  = "UPDATE design 
+         SET title = ?, description = ?
+         WHERE designID = ? AND designerID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ssdd", $title, $description, $designID, $designerID);
 $stmt->execute();
 
-echo "ok";
+if ($stmt->affected_rows >= 0) {
+    echo json_encode(['success' => true]);
+} else {
+    echo json_encode(['success' => false, 'error' => 'Update failed']);
+}
