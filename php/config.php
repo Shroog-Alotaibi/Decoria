@@ -1,7 +1,5 @@
 <?php
-// ===================================
-// DATABASE CONNECTION
-// ===================================
+
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
 $DB_PASS = 'root';     
@@ -15,9 +13,7 @@ if ($conn->connect_error) {
 
 $conn->set_charset("utf8mb4");
 
-// ===================================
-// SESSION & AUTH HELPERS
-// ===================================
+
 session_start();
 
 function redirect_to($location) {
@@ -25,10 +21,7 @@ function redirect_to($location) {
     exit();
 }
 
-/**
- * Check login and (optional) role
- * $role_required example: 'Designer'
- */
+
 function check_login($role_required = '') {
     if (!isset($_SESSION['user_id'])) {
         redirect_to('login.php');
@@ -38,7 +31,7 @@ function check_login($role_required = '') {
         $role_required !== '' &&
         (!isset($_SESSION['role']) || $_SESSION['role'] !== $role_required)
     ) {
-        // User logged in but with wrong role
+       
         redirect_to('home.php');
     }
 }

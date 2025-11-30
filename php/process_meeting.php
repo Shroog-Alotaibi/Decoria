@@ -1,26 +1,21 @@
 <?php
-// ===================================
-// Database connection settings
-// ===================================
+
 $DB_HOST = 'localhost';
 $DB_USER = 'root'; 
 $DB_PASS = 'root';     
 $DB_NAME = 'decoria';
 
-// Create connection
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Ensure proper Arabic UTF-8 support
+
 $conn->set_charset("utf8mb4");
 
-// ===================================
-// Session management and login check
-// ===================================
+
 session_start();
 
 function redirect_to($location) {
@@ -28,9 +23,7 @@ function redirect_to($location) {
     exit();
 }
 
-/**
- * Verify login and required role
- */
+
 function check_login($role_required = '') {
     if (!isset($_SESSION['userID'])) {
         redirect_to('login.php');
@@ -41,31 +34,27 @@ function check_login($role_required = '') {
     }
 }
 
-// Verify customer login
+
 check_login('Customer'); 
 
-// Verify POST request
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     redirect_to('meeting.php');
 }
-
-// 1. Extract data from POST and session
-$clientID = $_SESSION['userID']; // Fetch client ID from session
+$clientID = $_SESSION['userID']; 
 $designerID = $conn->real_escape_string($_POST['designerID']);
 $date = $conn->real_escape_string($_POST['date']);
 $time = $conn->real_escape_string($_POST['time']);
 $note = $conn->real_escape_string($_POST['note']);
 $status = 'Pending'; 
-$price = 350; // Default consultation fee
+$price = 350; 
 
-// 2. Insert meeting into the database
 $sql_insert = "INSERT INTO meeting (clientID, designerID, date, time, status, note, price) 
                VALUES ('$clientID', '$designerID', '$date', '$time', '$status', '$note', '$price')";
 
 if ($conn->query($sql_insert) === TRUE) {
     $meetingID = $conn->insert_id;
 
-    // 3. Fetch Zoom link and designer name
+  
     $sql_zoom = "SELECT u.name AS designerName, d.zoomLink FROM designer d 
                  JOIN user u ON d.designerID = u.userID 
                  WHERE d.designerID = '$designerID'";
@@ -73,7 +62,7 @@ if ($conn->query($sql_insert) === TRUE) {
     $zoom_data = $result_zoom->fetch_assoc();
     $zoomLink = $zoom_data['zoomLink'] ?? '#';
 
-    // 4. Display success message and meeting details
+   
     echo "
         <!DOCTYPE html>
         <html lang='en' dir='rtl'>
@@ -101,7 +90,7 @@ if ($conn->query($sql_insert) === TRUE) {
     ";
 
 } else {
-    // Display error message
+
     die("An error occurred while booking: " . $conn->error);
 }
 

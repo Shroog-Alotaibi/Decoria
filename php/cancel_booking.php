@@ -4,9 +4,7 @@ ini_set('display_errors', 1);
 
 require_once "config.php"; 
 
-// ===================================
-// Session check
-// ===================================
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -17,9 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
-// ===================================
-// 1. Handle file upload
-// ===================================
+
 $transactionPhotoPath = null;
 
 if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] === UPLOAD_ERR_OK) {
@@ -29,14 +25,14 @@ if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] =
     $fileNameCmps = explode(".", $fileName);
     $fileExtension = strtolower(end($fileNameCmps));
 
-    // اسم جديد للصورة
+  
     $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
 
    
     $uploadFileDir = '../photo/uploads';
 
 
-    // لازم تتأكدين أن مجلد uploads موجود داخل: php/
+ 
     $destPath = $uploadFileDir . $newFileName;
 
     if (move_uploaded_file($fileTmpPath, $destPath)) {
@@ -49,20 +45,16 @@ if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] =
     die("Transaction photo is required.");
 }
 
-// ===================================
-// 2. Extract data
-// ===================================
+
 $clientID   = $_SESSION['user_id'];
 $designerID = $conn->real_escape_string($_POST['designerID']);
-$designID   = $conn->real_escape_string($_POST['designID']); // ← تمت إضافتها
+$designID   = $conn->real_escape_string($_POST['designID']); 
 $date       = $conn->real_escape_string($_POST['date']);
 $time       = $conn->real_escape_string($_POST['time']);
 $status     = 'Request';
 $price      = 10000;
 
-// ===================================
-// 3. Insert Booking
-// ===================================
+
 $sql_insert = "
 INSERT INTO booking (clientID, designerID, designID, date, time, status, price, receipt)
 VALUES ('$clientID', '$designerID', '$designID', '$date', '$time', '$status', '$price', '$transactionPhotoPath')

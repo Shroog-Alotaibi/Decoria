@@ -15,7 +15,6 @@ if ($title === '' || $description === '' || !isset($_FILES['image'])) {
     exit;
 }
 
-// Handle image upload
 $uploadDir = '../photo/designs/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -33,7 +32,7 @@ if (!in_array($ext, $allowed)) {
 
 $filename     = 'design_' . $designerID . '_' . time() . '.' . $ext;
 $targetPath   = $uploadDir . $filename;
-$relativePath = 'photo/designs/' . $filename; // stored in DB
+$relativePath = 'photo/designs/' . $filename;    
 
 if (!move_uploaded_file($img['tmp_name'], $targetPath)) {
     echo json_encode(['success' => false, 'error' => 'Failed to save image']);

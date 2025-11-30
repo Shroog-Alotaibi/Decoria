@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// الاتصال بقاعدة البيانات
 $conn = new mysqli("localhost", "root", "root", "decoria", 8889);
 
 if ($conn->connect_error) {
@@ -11,7 +10,6 @@ if ($conn->connect_error) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // نقرأ المدخلات من الفورم
     $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -33,15 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($row = $result->fetch_assoc()) {
 
-                // كلمة السر مخزنة كـ MD5
+              
                 if (md5($password) === $row['password']) {
 
-                    // تسجيل الدخول ناجح
+                 
                     $_SESSION['user_id'] = (int)$row['userID'];
                     $_SESSION['name']    = $row['name'];
                     $_SESSION['role']    = $row['role'];
 
-                    // 🔥 التوجيه: الكل يروح على الهوم بيج
                     header('Location: ../html/home.php');
                     exit();
 

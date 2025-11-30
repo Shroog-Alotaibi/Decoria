@@ -1,18 +1,16 @@
 <?php
-// الاتصال بقاعدة البيانات (عدّلي الإعدادات حسب MAMP عندك)
+
 $host     = 'localhost';
 $user     = 'root';
-$password = 'root';    // أو '' لو أنتي ماغيّرتِ الإعداد
+$password = 'root';  
 $dbname   = 'decoria';
-$port     = 8889;      // غالباً 8889 في MAMP
 
-$conn = new mysqli($host, $user, $password, $dbname, $port);
+
+$conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// نجيب المصممين من جدول designer + user
-// ونستبعد سميرة نهائياً
 $sql = "
     SELECT 
         d.designerID,

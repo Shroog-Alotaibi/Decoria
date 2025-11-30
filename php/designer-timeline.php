@@ -2,7 +2,6 @@
 require_once "config.php"; 
 check_login("Designer");
 
-// Ensure bookingID is provided
 if (!isset($_GET['bookingID'])) {
     die("No booking selected.");
 }
@@ -10,7 +9,7 @@ if (!isset($_GET['bookingID'])) {
 $bookingID = intval($_GET['bookingID']);
 $designerID = $_SESSION['user_id'];
 
-// Fetch booking + timeline info
+
 $sql = "SELECT b.*, 
                bt.steps, 
                u.name AS clientName
@@ -31,7 +30,7 @@ if ($result->num_rows === 0) {
 $data = $result->fetch_assoc();
 $currentStep = $data["steps"] ?? "not_received";
 
-// Map DB step → checkbox ID
+
 $selected = [
     "received"     => "requestCheckbox",
     "in_progress"  => "progressCheckbox",
@@ -48,7 +47,6 @@ $selected = [
   <link rel="stylesheet" href="../css/decoria.css" />
 
   <style>
-    /* (YOUR CSS EXACTLY AS PROVIDED — UNCHANGED) */
     .timeline-container {
       max-width: 800px;
       margin: 40px auto;

@@ -1,12 +1,11 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once "config.php"; // يشمل الاتصال + session_start + check_login
+require_once "config.php"; 
 
-// 1) تأكد أنه مسجل دخول (أي مستخدم)
 check_login();
 
-// 2) السماح فقط إذا كان الدور Customer أو Designer
+
 if (
     !isset($_SESSION['role']) ||
     ($_SESSION['role'] !== 'Customer' && $_SESSION['role'] !== 'Designer')
@@ -14,7 +13,6 @@ if (
     redirect_to('home.php');
 }
 
-// 3) جلب بيانات المستخدم الحالي
 $user_id = intval($_SESSION['user_id']);
 
 $user_query = "SELECT * FROM user WHERE userID = $user_id";
@@ -64,10 +62,10 @@ if (!$user) {
 
 <h2 class="section-title">Personal Settings</h2>
 
-<!-- RESULT MESSAGE -->
+
 <div id="messageBox"></div>
 
-<!-- تم تغيير الـ <main> إلى <div> -->
+
 <div class="settings-page">
 
 <section class="card">
@@ -120,7 +118,7 @@ if (!$user) {
 
 </section>
 
-</div> <!-- نهاية settings-page -->
+</div> 
 
 </main>
 

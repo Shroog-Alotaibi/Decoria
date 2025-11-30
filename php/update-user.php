@@ -1,5 +1,5 @@
 <?php
-require_once "config.php"; // اتصال + session_start
+require_once "config.php"; 
 
 if (!isset($_POST['userID'])) {
     echo "Missing userID";

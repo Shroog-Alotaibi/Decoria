@@ -13,7 +13,7 @@ if ($designID <= 0) {
     exit;
 }
 
-// Optional: get image to delete from disk
+
 $sql  = "SELECT image FROM design WHERE designID = ? AND designerID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("dd", $designID, $designerID);
@@ -27,13 +27,11 @@ if (!$res) {
 
 $imagePath = '../' . $res['image'];
 
-// Delete DB row
 $sql  = "DELETE FROM design WHERE designID = ? AND designerID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("dd", $designID, $designerID);
 $stmt->execute();
 
-// Optionally delete file
 if (is_file($imagePath)) {
     @unlink($imagePath);
 }

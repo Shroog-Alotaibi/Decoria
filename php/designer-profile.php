@@ -2,14 +2,12 @@
 require_once "config.php";
 session_start();
 
-// Only designers can access this page
+
 check_login('Designer');
 
 $designerID = $_SESSION['user_id'];
 
-/* ----------------------------------------
-   FETCH DESIGNER PROFILE INFO
-------------------------------------------- */
+
 $sql = "SELECT 
             u.name,
             d.specialty,
@@ -26,7 +24,7 @@ $stmt->execute();
 $designer = $stmt->get_result()->fetch_assoc();
 
 if (!$designer) {
-    // Fallback (in case designer row missing)
+   
     $designer = [
         "name"           => "Designer Name",
         "specialty"      => "",
@@ -36,9 +34,7 @@ if (!$designer) {
     ];
 }
 
-/* ----------------------------------------
-   FETCH DESIGNS FOR THIS DESIGNER
-------------------------------------------- */
+
 $sql = "SELECT designID, title, description, image, uploadDate
         FROM design
         WHERE designerID = ?
@@ -49,9 +45,6 @@ $stmt->bind_param("i", $designerID);
 $stmt->execute();
 $designs = $stmt->get_result();
 
-/* ----------------------------------------
-   FETCH REVIEWS FOR THIS DESIGNER
-------------------------------------------- */
 $sql = "SELECT 
             r.rating,
             r.comment,
@@ -74,11 +67,11 @@ $reviewsCount = $reviews->num_rows;
   <meta charset="UTF-8" />
   <title>DECORIA — Designer Profile</title>
 
-  <!-- Main theme -->
+ 
   <link rel="stylesheet" href="../css/decoria.css" />
 
   <style>
-    /* ====== PROFILE HEADER ====== */
+
     .profile-header {
       text-align: center;
       margin: 40px auto 30px;
@@ -146,7 +139,7 @@ $reviewsCount = $reviews->num_rows;
       color: var(--muted);
     }
 
-    /* ====== TABS ====== */
+  
     .tabs-row {
       margin-top: 40px;
       border-bottom: 1px solid var(--border);
@@ -173,7 +166,6 @@ $reviewsCount = $reviews->num_rows;
       color: var(--brand);
     }
 
-    /* ====== DESIGNS GRID ====== */
     .posts-container {
       margin-top: 25px;
       display: grid;
@@ -256,7 +248,6 @@ $reviewsCount = $reviews->num_rows;
       transform: scale(1.05);
     }
 
-    /* ====== REVIEWS SECTION ====== */
     .reviews-section {
       margin-top: 25px;
       display: none;
@@ -324,7 +315,6 @@ $reviewsCount = $reviews->num_rows;
       color: var(--muted);
     }
 
-    /* ====== POPUP OVERLAY ====== */
     .popup-overlay {
       position: fixed;
       inset: 0;
@@ -407,7 +397,6 @@ $reviewsCount = $reviews->num_rows;
 </head>
 <body>
 
-  <!-- Header -->
   <header class="site-header">
     <div class="container header-container">
       <div class="brand">
@@ -420,7 +409,6 @@ $reviewsCount = $reviews->num_rows;
     </div>
   </header>
 
-  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
     <a href="home-designer.php">Home</a>
@@ -434,10 +422,9 @@ $reviewsCount = $reviews->num_rows;
   </div>
   <div id="overlay"></div>
 
-  <!-- Main Content -->
+ 
   <main class="container">
 
-    <!-- PROFILE HEADER -->
     <section class="profile-header">
       <img
         id="designerLogo"
@@ -463,7 +450,6 @@ $reviewsCount = $reviews->num_rows;
       </div>
     </section>
 
-    <!-- TABS -->
     <section class="tabs-row">
       <div class="tabs">
         <button class="tab-btn active" data-tab="designs">Designs</button>
@@ -471,13 +457,12 @@ $reviewsCount = $reviews->num_rows;
       </div>
     </section>
 
-    <!-- DESIGNS TAB -->
     <section id="designsSection">
       <div class="posts-container" id="postsContainer">
         <?php while ($d = $designs->fetch_assoc()): ?>
           <article class="post-card" id="post-<?php echo $d['designID']; ?>">
             <div class="post-controls">
-              <!-- Edit button -->
+             
               <button
                 class="icon-btn edit"
                 type="button"
@@ -492,7 +477,7 @@ $reviewsCount = $reviews->num_rows;
                   <path d="M20.71 7.04l-2.34-2.34a1 1 0 0 0-1.41 0L15.13 6.53l3.75 3.75 2.41-2.41a1 1 0 0 0 0-1.41z"/>
                 </svg>
               </button>
-              <!-- Delete button -->
+        
               <button
                 class="icon-btn delete"
                 type="button"
@@ -522,7 +507,7 @@ $reviewsCount = $reviews->num_rows;
       </div>
     </section>
 
-    <!-- REVIEWS TAB -->
+
     <section id="reviewsSection" class="reviews-section">
       <h3 class="reviews-title">Reviews</h3>
       <div class="reviews-list">
@@ -570,9 +555,9 @@ $reviewsCount = $reviews->num_rows;
     </div>
   </footer>
 
-  <!-- ========= POPUPS ========= -->
+ 
 
-  <!-- Upload Design Popup -->
+
   <div class="popup-overlay" id="uploadPopup">
     <div class="popup">
       <h3>Add New Design</h3>
@@ -595,7 +580,7 @@ $reviewsCount = $reviews->num_rows;
     </div>
   </div>
 
-  <!-- Edit Design Popup -->
+
   <div class="popup-overlay" id="editDesignPopup">
     <div class="popup">
       <h3>Edit Design</h3>
@@ -615,7 +600,6 @@ $reviewsCount = $reviews->num_rows;
     </div>
   </div>
 
-  <!-- Edit Profile Popup -->
   <div class="popup-overlay" id="editProfilePopup">
     <div class="popup">
       <h3>Edit Profile</h3>
@@ -638,7 +622,7 @@ $reviewsCount = $reviews->num_rows;
     </div>
   </div>
 
-  <!-- JS -->
+
   <script src="../js/sidebar.js"></script>
   <script>
     const postsContainer     = document.getElementById('postsContainer');
@@ -661,7 +645,7 @@ $reviewsCount = $reviews->num_rows;
     const cancelProfileBtn   = document.getElementById('cancelProfileBtn');
     const saveProfileBtn     = document.getElementById('saveProfileBtn');
 
-    // Tab switching
+   
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
         tabs.forEach(b => b.classList.remove('active'));
@@ -677,7 +661,7 @@ $reviewsCount = $reviews->num_rows;
       });
     });
 
-    // Popup helpers
+   
     function openPopup(p) { p.classList.add('active'); }
     function closePopup(p) { p.classList.remove('active'); }
 
@@ -688,14 +672,14 @@ $reviewsCount = $reviews->num_rows;
     cancelEditDesignBtn.addEventListener('click', () => closePopup(editDesignPopup));
     cancelProfileBtn.addEventListener('click', () => closePopup(editProfilePopup));
 
-    // Close popup when clicking outside
+    
     [uploadPopup, editDesignPopup, editProfilePopup].forEach(p => {
       p.addEventListener('click', (e) => {
         if (e.target === p) closePopup(p);
       });
     });
 
-    // ===== DELETE DESIGN (NO CONFIRM MSG, NO RELOAD) =====
+  
     function deleteDesign(id) {
       fetch('deleteDesign.php', {
         method: 'POST',
@@ -708,12 +692,12 @@ $reviewsCount = $reviews->num_rows;
           const card = document.getElementById('post-' + id);
           if (card) card.remove();
         }
-        // No alert, as requested
+    
       })
       .catch(console.error);
     }
 
-    // ===== OPEN EDIT DESIGN POPUP =====
+   
     function openEditDesign(id, title, desc) {
       document.getElementById('editDesignID').value = id;
       document.getElementById('editTitle').value = title;
@@ -721,15 +705,14 @@ $reviewsCount = $reviews->num_rows;
       openPopup(editDesignPopup);
     }
 
-    // ===== SAVE EDITED DESIGN (AJAX, LIVE UPDATE) =====
+
     saveEditDesignBtn.addEventListener('click', () => {
       const id    = document.getElementById('editDesignID').value;
       const title = document.getElementById('editTitle').value.trim();
       const desc  = document.getElementById('editDesc').value.trim();
 
       if (!title || !desc) {
-        // Tiny validation – no alert requested for success, but
-        // for errors it's okay to show
+       
         alert('Please fill both title and description.');
         return;
       }
@@ -757,7 +740,6 @@ $reviewsCount = $reviews->num_rows;
       .catch(console.error);
     });
 
-    // ===== UPLOAD NEW DESIGN (AJAX, APPEND CARD WITHOUT RELOAD) =====
     confirmUploadBtn.addEventListener('click', () => {
       const title = document.getElementById('uploadTitle').value.trim();
       const desc  = document.getElementById('uploadDesc').value.trim();
@@ -781,7 +763,7 @@ $reviewsCount = $reviews->num_rows;
       .then(data => {
         if (data.success && data.design) {
           const d = data.design;
-          // Create new card DOM
+         
           const article = document.createElement('article');
           article.className = 'post-card';
           article.id = 'post-' + d.designID;
@@ -810,7 +792,6 @@ $reviewsCount = $reviews->num_rows;
           `;
           postsContainer.prepend(article);
 
-          // Reset form and close popup
           document.getElementById('uploadTitle').value = '';
           document.getElementById('uploadDesc').value = '';
           document.getElementById('uploadImage').value = '';
@@ -820,7 +801,7 @@ $reviewsCount = $reviews->num_rows;
       .catch(console.error);
     });
 
-    // ===== SAVE PROFILE (AJAX, LIVE UPDATE) =====
+ 
     saveProfileBtn.addEventListener('click', () => {
       const specialty = document.getElementById('newSpecialty').value.trim();
       const bio       = document.getElementById('newBio').value.trim();

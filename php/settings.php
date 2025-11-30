@@ -1,10 +1,8 @@
 <?php
-require_once "config.php"; // يشمل الاتصال + session_start + check_login
+require_once "config.php";   
 
-// 1) تأكد أنه مسجل دخول (أي مستخدم)
 check_login();
 
-// 2) السماح فقط إذا كان الدور Customer أو Designer
 if (
     !isset($_SESSION['role']) ||
     ($_SESSION['role'] !== 'Customer' && $_SESSION['role'] !== 'Designer')
@@ -12,7 +10,6 @@ if (
     redirect_to('home.php');
 }
 
-// 3) جلب بيانات المستخدم الحالي
 $user_id = intval($_SESSION['user_id']);
 
 $user_query = "SELECT * FROM user WHERE userID = $user_id";
@@ -62,7 +59,6 @@ if (!$user) {
     
     <h2 class="section-title">Settings</h2>
 
-    <!-- تم تغيير الـ <main> إلى <div> هنا -->
     <div class="settings-page">
 
         <section class="card">
@@ -125,7 +121,7 @@ if (!$user) {
            <button class="edit-info-btn" onclick="window.location.href='settings-personal.php'">Edit</button>
         </section>
 
-    </div> <!-- نهاية الـ settings-page -->
+    </div> 
 
 </main>
 

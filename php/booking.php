@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 
 require_once "config.php";
 
-// التحقق من تسجيل الدخول
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -12,9 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $clientID = $_SESSION['user_id'];
 
-// ===============================
-// جلب المصممين
-// ===============================
+
 $designers_query = "
 SELECT d.designerID, u.name, d.specialty
 FROM designer d
@@ -22,9 +20,7 @@ JOIN user u ON u.userID = d.designerID
 ";
 $designers_result = $conn->query($designers_query);
 
-// ===============================
-// جلب التصاميم عند اختيار مصمم
-// ===============================
+
 $designs_result = null;
 $selectedDesigner = null;
 
@@ -76,10 +72,10 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
 <main class="container">
     <h2 class="section-title">Book Your Designer</h2>
 
-    <!-- مهم: نستخدم method POST حتى نعيد تحميل الصفحة مع اختيار المصمم -->
+   
     <form class="booking-form" method="POST" action="booking.php" enctype="multipart/form-data">
 
-        <!-- اختيار المصمم -->
+  
         <label for="designer">Choose Designer:</label>
         <select id="designer" name="designerID" required onchange="this.form.submit()">
             <option value="">Select a Designer</option>
@@ -95,7 +91,7 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
             ?>
         </select>
 
-        <!-- اختيار التصميم -->
+       
         <label for="design">Choose design:</label>
         <select id="design" name="designID" required>
             <?php
@@ -110,7 +106,7 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
             ?>
         </select>
 
-        <!-- إذا تم اختيار مصمم نعرض بقية الفورم -->
+      
         <?php if ($selectedDesigner): ?>
         
         <label for="date">Choose Date:</label>
