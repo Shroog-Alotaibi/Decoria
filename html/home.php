@@ -273,7 +273,7 @@ session_start();
 
     <a href="designers.php">Designers</a>
     <a href="mybookings.php">Booking</a>
-    <a href="Designer-timeline.php">Timeline</a>
+    <a href="designer-profile.php">Profile</a>
     <a href="meeting.php">Meeting</a>
     <a href="settings.php">Settings</a>
     <hr>
