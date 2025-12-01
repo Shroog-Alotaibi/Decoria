@@ -28,7 +28,7 @@ $sql = "
 ";
 $result = $conn->query($sql);
 
-// ماب للتقييمات عشان ما عندكم عمود rating في الجدول
+
 $ratingMap = [
     'Esra Aljaser'    => 4.8,
     'Felwa Althagfan' => 4.6,
