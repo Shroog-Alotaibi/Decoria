@@ -10,7 +10,7 @@ $designerID = $_SESSION['user_id'];
 $specialty = trim($_POST['specialty'] ?? '');
 $bio       = trim($_POST['bio'] ?? '');
 
-// First, get current profile so we can keep old image if none uploaded
+
 $sql  = "SELECT d.profilePicture, u.name
          FROM designer d
          JOIN user u ON u.userID = d.designerID
@@ -27,9 +27,9 @@ if (!$current) {
 
 $profilePicture = $current['profilePicture'];
 
-// If a new image uploaded
+
 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../photo/profiles/';
+    $uploadDir = '../photo/designer/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -51,7 +51,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         exit;
     }
 
-    // Optionally delete old pic if you want and it’s not default
+    
     $oldPath = '../' . $profilePicture;
     if ($profilePicture && strpos($profilePicture, 'defaultAvatar') === false && is_file($oldPath)) {
         @unlink($oldPath);
@@ -60,7 +60,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
     $profilePicture = $relativePath;
 }
 
-// Update DB
+
 $sql  = "UPDATE designer
          SET specialty = ?, bio = ?, profilePicture = ?
          WHERE designerID = ?";
@@ -68,7 +68,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("sssd", $specialty, $bio, $profilePicture, $designerID);
 $stmt->execute();
 
-// Recount reviews
+
 $sql  = "SELECT COUNT(*) AS cnt FROM review WHERE designerID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("d", $designerID);
