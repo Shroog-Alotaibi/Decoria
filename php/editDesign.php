@@ -16,7 +16,7 @@ if ($designID <= 0 || $title === '' || $description === '') {
     exit;
 }
 
-// Ensure the design belongs to this designer
+
 $sql  = "UPDATE design 
          SET title = ?, description = ?
          WHERE designID = ? AND designerID = ?";
