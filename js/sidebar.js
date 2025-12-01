@@ -1,4 +1,4 @@
-// فتح / إغلاق القائمة الجانبية
+
 const sidebar = document.getElementById("sidebar");
 const toggle = document.querySelector(".menu-toggle");
 const closeBtn = document.getElementById("closeSidebar");
