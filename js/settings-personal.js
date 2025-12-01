@@ -1,3 +1,4 @@
+
 function saveChanges(userID) {
 
     const name = document.getElementById("name").value.trim();
@@ -7,12 +8,10 @@ function saveChanges(userID) {
     const errorBox = document.getElementById("errorMessage");
     const errorText = document.getElementById("errorText");
 
-    // إخفاء الرسالة أول
+    
     errorBox.style.display = "none";
 
-    // ============================
-    //     VALIDATION
-    // ============================
+   
 
     if (name === "" || email === "" || phone === "") {
         return showError("⚠️ All fields are required");
@@ -28,9 +27,7 @@ function saveChanges(userID) {
         return showError("📱 Phone number must be exactly 10 digits");
     }
 
-    // ============================
-    //        AJAX REQUEST
-    // ============================
+  
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "update-user.php", true);
@@ -40,7 +37,7 @@ function saveChanges(userID) {
 
         if (xhr.readyState === 4 && xhr.status === 200) {
 
-            // إذا نجح التحديث
+            
             if (xhr.responseText.trim() === "SUCCESS") {
                 alert("Saved successfully ✔️");
             } 
@@ -59,9 +56,7 @@ function saveChanges(userID) {
 }
 
 
-// ============================
-//    SHOW ERROR FUNCTION
-// ============================
+
 
 function showError(msg) {
     const box = document.getElementById("errorMessage");
