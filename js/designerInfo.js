@@ -1,8 +1,8 @@
-// ====== اختصارات ======
+
 const $ = (s, r=document)=>r.querySelector(s);
 const byId = id => document.getElementById(id);
 
-// ====== Tabs ======
+
 function initTabs(){
   const tabs=document.querySelectorAll(".tabs .tab"),
         secDesign=byId("designsSection"),
@@ -27,7 +27,7 @@ function initTabs(){
   });
 }
 
-// ====== Like button effect ======
+
 function initLikeButtons(){
   document.querySelectorAll(".like-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
@@ -42,7 +42,7 @@ function initLikeButtons(){
   });
 }
 
-// ====== Lightbox ======
+
 function setupLightbox(){
   let lb = byId('lb');
   if (!lb){
@@ -78,7 +78,7 @@ function setupLightbox(){
   lb.addEventListener('click',(e)=>{ if(e.target===lb) close(); });
   document.addEventListener('keydown',(e)=>{ if(e.key==="Escape") close(); });
 
-  // فتح الصورة عند الضغط عليها
+ 
   const host = byId("designsSection");
   if(!host) return;
 
@@ -88,7 +88,7 @@ function setupLightbox(){
   });
 }
 
-// ====== تشغيل عند تحميل الصفحة ======
+
 document.addEventListener("DOMContentLoaded",()=>{
   initTabs();
   initLikeButtons();
