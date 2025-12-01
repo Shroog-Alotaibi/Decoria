@@ -129,7 +129,7 @@ if (!$user) {
   <div class="footer-content">
     <p class="footer-text">
       © 2025 DECORIA — All rights reserved |
-      <a href="terms.html">Terms & Conditions</a>
+      <a href="terms.php">Terms & Conditions</a>
     </p>
     <img src="../photo/darlfooter.jpeg" class="footer-image">
   </div>
