@@ -2,6 +2,7 @@
 require_once "config.php"; 
 check_login("Designer");
 
+
 if (!isset($_GET['bookingID'])) {
     die("No booking selected.");
 }
@@ -47,6 +48,7 @@ $selected = [
   <link rel="stylesheet" href="../css/decoria.css" />
 
   <style>
+    
     .timeline-container {
       max-width: 800px;
       margin: 40px auto;
@@ -120,7 +122,7 @@ $selected = [
 
 <body>
 
-<!-- HEADER -->
+
 <header class="site-header">
   <div class="container header-container">
     <div class="brand">
@@ -131,32 +133,25 @@ $selected = [
   </div>
 </header>
 
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <span class="close-btn" id="closeSidebar">&times;</span>
-  <a href="home.html">Home</a>
-  <a href="designers.html">Designers</a>
-  <a href="booking.html" class="active">Booking</a>
-  <a href="profile.php">Profile</a>
-  <a href="meeting.html">Meeting</a>
-  <a href="settings.html">Settings</a>
-  <hr>
-  <a href="logout.php" class="logout">Logout</a>
-</div>
+
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+     <?php include("menu.php"); ?>
+  </div>
 
 <div id="overlay"></div>
 
-<!-- MAIN CONTENT -->
+
 <main class="container">
 <div class="timeline-container">
   <h2 class="section-title">Designer Timeline</h2>
   <p>Update the status of your current project to keep clients informed.</p>
 
-  <!-- TIMELINE OPTIONS -->
+ 
   <form id="timelineForm">
     <div class="timeline-options">
 
-      <!-- RECEIVED -->
+      
       <label class="timeline-option">
         <input type="checkbox" 
                name="status" value="received" 
@@ -169,7 +164,7 @@ $selected = [
         </div>
       </label>
 
-      <!-- IN PROGRESS -->
+     
       <label class="timeline-option">
         <input type="checkbox" 
                name="status" value="in_progress" 
@@ -182,7 +177,7 @@ $selected = [
         </div>
       </label>
 
-      <!-- COMPLETED -->
+      
       <label class="timeline-option">
         <input type="checkbox" 
                name="status" value="completed" 
@@ -233,16 +228,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // AJAX update
+ 
   document.getElementById("updateBtn").addEventListener("click", () => {
     const selected = document.querySelector('input[name="status"]:checked');
     if (!selected) return;
 
-    fetch("updateTimeline.php", {
-      method: "POST",
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: `bookingID=<?= $bookingID ?>&status=${selected.value}`
-    })
+   fetch("updateTimeline.php", {
+  method: "POST",
+  headers: {"Content-Type": "application/x-www-form-urlencoded"},
+  body: `bookingID=<?= $bookingID ?>&status=${selected.value}&updateBooking=1`
+})
+
     .then(res => res.text())
     .then(() => {
       document.getElementById("updateMessage").style.display = "block";
