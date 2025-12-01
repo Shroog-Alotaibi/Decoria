@@ -75,7 +75,7 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
    
     <form class="booking-form" method="POST" action="booking.php" enctype="multipart/form-data">
 
-  
+        
         <label for="designer">Choose Designer:</label>
         <select id="designer" name="designerID" required onchange="this.form.submit()">
             <option value="">Select a Designer</option>
@@ -91,7 +91,7 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
             ?>
         </select>
 
-       
+   
         <label for="design">Choose design:</label>
         <select id="design" name="designID" required>
             <?php
@@ -106,7 +106,7 @@ if (isset($_POST['designerID']) && !empty($_POST['designerID'])) {
             ?>
         </select>
 
-      
+       
         <?php if ($selectedDesigner): ?>
         
         <label for="date">Choose Date:</label>
