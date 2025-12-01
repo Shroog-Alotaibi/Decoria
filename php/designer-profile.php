@@ -24,7 +24,6 @@ $stmt->execute();
 $designer = $stmt->get_result()->fetch_assoc();
 
 if (!$designer) {
-   
     $designer = [
         "name"           => "Designer Name",
         "specialty"      => "",
@@ -44,6 +43,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $designerID);
 $stmt->execute();
 $designs = $stmt->get_result();
+
 
 $sql = "SELECT 
             r.rating,
@@ -67,381 +67,148 @@ $reviewsCount = $reviews->num_rows;
   <meta charset="UTF-8" />
   <title>DECORIA — Designer Profile</title>
 
- 
   <link rel="stylesheet" href="../css/decoria.css" />
 
   <style>
-
-    .profile-header {
-      text-align: center;
-      margin: 40px auto 30px;
-      max-width: 700px;
-    }
+    
+    .profile-header { text-align:center;margin:40px auto 30px;max-width:700px; }
     .profile-header img {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 3px solid var(--brand);
-      object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      width:140px;height:140px;border-radius:50%;
+      border:3px solid var(--brand);object-fit:cover;
+      box-shadow:0 4px 15px rgba(0,0,0,0.12);
     }
-    .designer-name {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--brand);
-      margin-top: 15px;
-    }
-    .designer-specialty {
-      color: var(--muted);
-      font-size: 15px;
-      margin-top: 4px;
-    }
-    .designer-bio {
-      margin-top: 12px;
-      color: var(--fg-muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .profile-actions {
-      margin-top: 18px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .primary-btn, .secondary-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .primary-btn {
-      background: var(--brand);
-      color: #fff;
-    }
-    .primary-btn:hover {
-      background: var(--primary-btn-hover);
-      transform: translateY(-1px);
-    }
-    .secondary-btn {
-      background: #f3f3f3;
-      color: #444;
-    }
-    .secondary-btn:hover {
-      background: #e7e7e7;
-      transform: translateY(-1px);
-    }
-    .stats-row {
-      margin-top: 15px;
-      font-size: 14px;
-      color: var(--muted);
-    }
+    .designer-name { font-size:26px;font-weight:800;color:var(--brand);margin-top:15px;}
+    .designer-specialty { color:var(--muted);font-size:15px;margin-top:4px;}
+    .designer-bio { margin-top:12px;color:var(--fg-muted);font-size:14px;line-height:1.5;}
+    .stats-row { margin-top:15px;font-size:14px;color:var(--muted);}
+    .profile-actions {margin-top:20px;display:flex;justify-content:center;gap:10px;}
 
-  
-    .tabs-row {
-      margin-top: 40px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    
+    .primary-btn,.secondary-btn {
+      padding:8px 18px;border-radius:999px;font-weight:600;
+      cursor:pointer;transition:0.2s;border:none;
     }
-    .tabs {
-      display: flex;
-      gap: 10px;
-    }
+    .primary-btn { background:var(--brand);color:white; }
+    .primary-btn:hover { background:var(--primary-btn-hover);transform:translateY(-1px);}
+    .secondary-btn { background:#f3f3f3;color:#444; }
+    .secondary-btn:hover { background:#e7e7e7;transform:translateY(-1px);}
+
+    
+    .tabs-row {margin-top:40px;border-bottom:1px solid var(--border);display:flex;}
+    .tabs { display:flex;gap:10px; }
     .tab-btn {
-      background: none;
-      border: none;
-      padding: 10px 18px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      color: var(--muted);
+      background:none;border:none;padding:10px 18px;font-size:15px;
+      font-weight:600;cursor:pointer;color:var(--muted);
+      border-bottom:3px solid transparent;
     }
-    .tab-btn.active {
-      border-bottom-color: var(--brand);
-      color: var(--brand);
-    }
+    .tab-btn.active { color:var(--brand);border-bottom-color:var(--brand); }
 
-    .posts-container {
-      margin-top: 25px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-    }
+    
+    .posts-container { margin-top:25px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px; }
     .post-card {
-      background: var(--card);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 12px;
-      position: relative;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background:var(--card);border-radius:14px;padding:12px;border:1px solid var(--border);
+      position:relative;transition:.2s;box-shadow:0 3px 12px rgba(0,0,0,0.06);
     }
-    .post-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .post-card img {
-      width: 100%;
-      height: 180px;
-      border-radius: 10px;
-      object-fit: cover;
-    }
-    .post-title {
-      font-weight: 700;
-      margin-top: 10px;
-      color: var(--brand);
-      font-size: 15px;
-    }
-    .post-desc {
-      font-size: 14px;
-      margin-top: 5px;
-      color: var(--fg-muted);
-    }
-    .post-meta {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .post-controls {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      gap: 6px;
-    }
-    .icon-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      transition: transform 0.15s ease, background 0.15s ease;
-      background: #fff;
-    }
-    .icon-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-    .icon-btn.edit {
-      color: #389e0d;
-      background: #f6ffed;
-    }
-    .icon-btn.edit:hover {
-      background: #d9f7be;
-      transform: scale(1.05);
-    }
-    .icon-btn.delete {
-      color: #cf1322;
-      background: #fff1f0;
-    }
-    .icon-btn.delete:hover {
-      background: #ffccc7;
-      transform: scale(1.05);
-    }
+    .post-card:hover { transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+    .post-card img { width:100%;height:180px;object-fit:cover;border-radius:10px; }
+    .post-title { margin-top:10px;font-weight:700;color:var(--brand); }
+    .post-desc { font-size:14px;margin-top:5px;color:var(--fg-muted); }
+    .post-meta { margin-top:6px;font-size:12px;color:var(--muted); }
 
-    .reviews-section {
-      margin-top: 25px;
-      display: none;
+    
+    .post-controls { position:absolute;top:10px;right:10px;display:flex;gap:6px; }
+    .icon-btn {
+      width:32px;height:32px;border-radius:50%;border:none;display:flex;
+      justify-content:center;align-items:center;background:white;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:pointer;transition:.2s;
     }
-    .reviews-section.active {
-      display: block;
-    }
-    .reviews-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--brand);
-      margin-bottom: 15px;
-    }
-    .reviews-list {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
+    .icon-btn.edit { color:#389e0d;background:#f6ffed; }
+    .icon-btn.edit:hover { background:#d9f7be;transform:scale(1.05);}
+    .icon-btn.delete { color:#cf1322;background:#fff1f0; }
+    .icon-btn.delete:hover { background:#ffccc7;transform:scale(1.05);}
+
+    
+    .reviews-section { margin-top:25px;display:none; }
+    .reviews-section.active { display:block; }
     .review-card {
-      display: flex;
-      gap: 12px;
-      padding: 14px 16px;
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display:flex;gap:12px;background:var(--card);padding:14px;border-radius:12px;
+      border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.05);
     }
     .review-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .review-main {
-      flex: 1;
-    }
-    .review-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .review-name {
-      font-weight: 700;
-      color: var(--brand);
-      font-size: 14px;
-    }
-    .review-stars {
-      color: #ffc107;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .review-text {
-      font-size: 14px;
-      color: var(--fg-muted);
-      margin-bottom: 2px;
-    }
-    .review-date {
-      font-size: 12px;
-      color: var(--muted);
+      width:42px;height:42px;border-radius:50%;background:#f0f0f0;
+      display:flex;align-items:center;justify-content:center;font-size:18px;
     }
 
+    
     .popup-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      padding: 20px;
+      position:fixed;inset:0;background:rgba(0,0,0,0.5);
+      display:none;align-items:center;justify-content:center;z-index:9999;
     }
-    .popup-overlay.active {
-      display: flex;
-    }
+    .popup-overlay.active { display:flex; }
     .popup {
-      background: #fff;
-      border-radius: 14px;
-      padding: 20px 22px;
-      max-width: 480px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.22);
-    }
-    .popup h3 {
-      margin: 0 0 14px;
-      color: var(--brand);
-      text-align: center;
-    }
-    .form-group {
-      margin-bottom: 12px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-      font-weight: 600;
-      color: #333;
-    }
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 9px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      font-size: 14px;
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 70px;
-    }
-    .popup-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 14px;
-    }
-    .btn-cancel {
-      background: #f5f5f5;
-      color: #555;
-    }
-    .btn-save {
-      background: var(--brand);
-      color: #fff;
+      background:white;border-radius:14px;padding:20px;width:100%;max-width:480px;
+      max-height:90vh;overflow-y:auto;box-shadow:0 14px 40px rgba(0,0,0,0.22);
     }
 
-    .file-input {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px dashed var(--border);
-      background: #fafafa;
-      font-size: 13px;
+    .form-group { margin-bottom:12px; }
+    .form-group label { font-size:13px;font-weight:600;margin-bottom:4px;display:block; }
+    .form-group input,.form-group textarea {
+      width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);
+      font-size:14px;
     }
+    .popup-actions { display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
 
-    @media (max-width: 768px) {
-      .posts-container {
-        grid-template-columns: 1fr;
-      }
-    }
+    .file-input { padding:8px;border:1px dashed var(--border);background:#fafafa; }
   </style>
 </head>
+
 <body>
 
-  <header class="site-header">
-    <div class="container header-container">
-      <div class="brand">
-        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
-      </div>
-      <p class="welcome-text">Welcome to DECORIA</p>
-      <div class="header-buttons">
-        <button class="menu-toggle" aria-label="Open menu">☰</button>
-      </div>
+<header class="site-header">
+  <div class="container header-container">
+    <div class="brand">
+      <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
     </div>
-  </header>
 
+    <p class="welcome-text">Welcome to DECORIA</p>
+
+    <div class="header-buttons">
+      <button class="menu-toggle" aria-label="Open menu">☰</button>
+    </div>
+  </div>
+</header>
+
+
+ 
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
-    <a href="home-designer.php">Home</a>
-    <a href="designer-profile.php" class="active">Profile</a>
-    <a href="Request.php">Requests</a>
-    <a href="designer-timeline.php">Timeline</a>
-    <a href="meeting.html">Meeting</a>
-    <a href="settings.html">Settings</a>
-    <hr>
-    <a href="logout.php" class="logout">Logout</a>
+    <?php include "menu.php"; ?>
   </div>
   <div id="overlay"></div>
 
- 
+
   <main class="container">
 
+   
     <section class="profile-header">
-      <img
-        id="designerLogo"
+      <img id="designerLogo"
         src="<?php echo '../' . htmlspecialchars($designer['profilePicture']); ?>"
         alt="Designer Avatar">
+
       <h2 class="designer-name" id="designerName">
         <?php echo htmlspecialchars($designer['name']); ?>
       </h2>
+
       <p class="designer-specialty" id="designerSpecialty">
         <?php echo htmlspecialchars($designer['specialty']); ?>
       </p>
+
       <p class="designer-bio" id="designerBio">
         <?php echo nl2br(htmlspecialchars($designer['bio'])); ?>
       </p>
 
       <div class="stats-row">
-        <span id="reviewsCount"><?php echo (int)$reviewsCount; ?></span> Reviews
+        <span id="reviewsCount"><?php echo $reviewsCount; ?></span> Reviews
       </div>
 
       <div class="profile-actions">
@@ -450,6 +217,7 @@ $reviewsCount = $reviews->num_rows;
       </div>
     </section>
 
+   
     <section class="tabs-row">
       <div class="tabs">
         <button class="tab-btn active" data-tab="designs">Designs</button>
@@ -457,51 +225,30 @@ $reviewsCount = $reviews->num_rows;
       </div>
     </section>
 
+  
     <section id="designsSection">
       <div class="posts-container" id="postsContainer">
         <?php while ($d = $designs->fetch_assoc()): ?>
           <article class="post-card" id="post-<?php echo $d['designID']; ?>">
+
             <div class="post-controls">
-             
-              <button
-                class="icon-btn edit"
-                type="button"
+              <button class="icon-btn edit"
                 onclick="openEditDesign(
-                  <?php echo (int)$d['designID']; ?>,
-                  <?php echo json_encode($d['title']); ?>,
-                  <?php echo json_encode($d['description']); ?>
-                )"
-                aria-label="Edit design">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
-                  <path d="M20.71 7.04l-2.34-2.34a1 1 0 0 0-1.41 0L15.13 6.53l3.75 3.75 2.41-2.41a1 1 0 0 0 0-1.41z"/>
-                </svg>
-              </button>
-        
-              <button
-                class="icon-btn delete"
-                type="button"
-                onclick="deleteDesign(<?php echo (int)$d['designID']; ?>)"
-                aria-label="Delete design">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-              </button>
+                  <?php echo $d['designID']; ?>,
+                  '<?php echo addslashes($d['title']); ?>',
+                  '<?php echo addslashes($d['description']); ?>'
+                )">✎</button>
+
+              <button class="icon-btn delete"
+                onclick="deleteDesign(<?php echo $d['designID']; ?>)">🗑</button>
             </div>
 
-            <img
-              src="<?php echo '../' . htmlspecialchars($d['image']); ?>"
-              alt="<?php echo htmlspecialchars($d['title']); ?>">
+            <img src="../<?php echo $d['image']; ?>">
 
-            <div class="post-title">
-              <?php echo htmlspecialchars($d['title']); ?>
-            </div>
-            <div class="post-desc">
-              <?php echo htmlspecialchars($d['description']); ?>
-            </div>
-            <div class="post-meta">
-              Uploaded on <?php echo htmlspecialchars($d['uploadDate']); ?>
-            </div>
+            <div class="post-title"><?php echo htmlspecialchars($d['title']); ?></div>
+            <div class="post-desc"><?php echo htmlspecialchars($d['description']); ?></div>
+            <div class="post-meta">Uploaded on <?php echo $d['uploadDate']; ?></div>
+
           </article>
         <?php endwhile; ?>
       </div>
@@ -509,93 +256,92 @@ $reviewsCount = $reviews->num_rows;
 
 
     <section id="reviewsSection" class="reviews-section">
-      <h3 class="reviews-title">Reviews</h3>
+      <h3 style="color:var(--brand)">Reviews</h3>
       <div class="reviews-list">
-        <?php if ($reviewsCount === 0): ?>
-          <p style="color: var(--muted); font-size: 14px;">
-            No reviews yet.
-          </p>
+
+        <?php if ($reviewsCount == 0): ?>
+          <p style="color:var(--muted)">No reviews yet.</p>
+
         <?php else: ?>
           <?php while ($r = $reviews->fetch_assoc()): ?>
             <article class="review-card">
               <div class="review-avatar">
-                <?php echo strtoupper(substr($r['clientName'], 0, 1)); ?>
+                <?php echo strtoupper($r['clientName'][0]); ?>
               </div>
+
               <div class="review-main">
                 <div class="review-head">
-                  <span class="review-name">
-                    <?php echo htmlspecialchars($r['clientName']); ?>
-                  </span>
-                  <span class="review-stars">
-                    ★ <?php echo htmlspecialchars($r['rating']); ?>
-                  </span>
+                  <span class="review-name"><?php echo htmlspecialchars($r['clientName']); ?></span>
+                  <span class="review-stars">★ <?php echo $r['rating']; ?></span>
                 </div>
-                <div class="review-text">
-                  <?php echo htmlspecialchars($r['comment']); ?>
-                </div>
-                <div class="review-date">
-                  <?php echo htmlspecialchars($r['reviewDate']); ?>
-                </div>
+
+                <div class="review-text"><?php echo htmlspecialchars($r['comment']); ?></div>
+                <div class="review-date"><?php echo $r['reviewDate']; ?></div>
               </div>
             </article>
           <?php endwhile; ?>
+
         <?php endif; ?>
+
       </div>
     </section>
 
   </main>
 
+
   <footer>
     <div class="footer-content">
-      <p class="footer-text">
-        © 2025 DECORIA — All rights reserved
-        | <a href="terms.html">Terms & Conditions</a>
-      </p>
-      <img src="../photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
+      <p class="footer-text">© 2025 DECORIA — All rights reserved</p>
+      <img src="../photo/darlfooter.jpeg" class="footer-image">
     </div>
   </footer>
-
- 
 
 
   <div class="popup-overlay" id="uploadPopup">
     <div class="popup">
       <h3>Add New Design</h3>
+
       <div class="form-group">
-        <label for="uploadTitle">Title</label>
-        <input type="text" id="uploadTitle" placeholder="Design title">
+        <label>Title</label>
+        <input type="text" id="uploadTitle">
       </div>
+
       <div class="form-group">
-        <label for="uploadDesc">Description</label>
-        <textarea id="uploadDesc" placeholder="Short description"></textarea>
+        <label>Description</label>
+        <textarea id="uploadDesc"></textarea>
       </div>
+
       <div class="form-group">
-        <label for="uploadImage">Design Image</label>
+        <label>Design Image</label>
         <input type="file" id="uploadImage" class="file-input" accept="image/*">
       </div>
+
       <div class="popup-actions">
-        <button type="button" class="secondary-btn btn-cancel" id="cancelUploadBtn">Cancel</button>
-        <button type="button" class="primary-btn btn-save" id="confirmUploadBtn">Add Design</button>
+        <button class="secondary-btn" onclick="closePopup(uploadPopup)">Cancel</button>
+        <button class="primary-btn" id="confirmUploadBtn">Add Design</button>
       </div>
+
     </div>
   </div>
-
 
   <div class="popup-overlay" id="editDesignPopup">
     <div class="popup">
       <h3>Edit Design</h3>
       <input type="hidden" id="editDesignID">
+
       <div class="form-group">
-        <label for="editTitle">Title</label>
+        <label>Title</label>
         <input type="text" id="editTitle">
       </div>
+
       <div class="form-group">
-        <label for="editDesc">Description</label>
+        <label>Description</label>
         <textarea id="editDesc"></textarea>
       </div>
+
       <div class="popup-actions">
-        <button type="button" class="secondary-btn btn-cancel" id="cancelEditDesignBtn">Cancel</button>
-        <button type="button" class="primary-btn btn-save" id="saveEditDesignBtn">Save Changes</button>
+        <button class="secondary-btn" onclick="closePopup(editDesignPopup)">Cancel</button>
+        <button class="primary-btn" id="saveEditDesignBtn">Save</button>
       </div>
     </div>
   </div>
@@ -603,237 +349,187 @@ $reviewsCount = $reviews->num_rows;
   <div class="popup-overlay" id="editProfilePopup">
     <div class="popup">
       <h3>Edit Profile</h3>
+
       <div class="form-group">
-        <label for="newSpecialty">Specialty</label>
-        <input type="text" id="newSpecialty" value="<?php echo htmlspecialchars($designer['specialty']); ?>">
+        <label>Specialty</label>
+        <input type="text" id="newSpecialty" value="<?php echo addslashes($designer['specialty']); ?>">
       </div>
+
       <div class="form-group">
-        <label for="newBio">Bio</label>
-        <textarea id="newBio"><?php echo htmlspecialchars($designer['bio']); ?></textarea>
+        <label>Bio</label>
+        <textarea id="newBio"><?php echo addslashes($designer['bio']); ?></textarea>
       </div>
+
       <div class="form-group">
-        <label for="newProfilePic">Profile Image</label>
-        <input type="file" id="newProfilePic" class="file-input" accept="image/*">
+        <label>Profile Picture</label>
+        <input type="file" id="newProfilePic" class="file-input">
       </div>
+
       <div class="popup-actions">
-        <button type="button" class="secondary-btn btn-cancel" id="cancelProfileBtn">Cancel</button>
-        <button type="button" class="primary-btn btn-save" id="saveProfileBtn">Save Profile</button>
+        <button class="secondary-btn" onclick="closePopup(editProfilePopup)">Cancel</button>
+        <button class="primary-btn" id="saveProfileBtn">Save</button>
       </div>
+
     </div>
   </div>
 
-
-  <script src="../js/sidebar.js"></script>
-  <script>
-    const postsContainer     = document.getElementById('postsContainer');
-    const designsSection     = document.getElementById('designsSection');
-    const reviewsSection     = document.getElementById('reviewsSection');
-    const tabs               = document.querySelectorAll('.tab-btn');
-
-    // Popups
-    const uploadPopup        = document.getElementById('uploadPopup');
-    const editDesignPopup    = document.getElementById('editDesignPopup');
-    const editProfilePopup   = document.getElementById('editProfilePopup');
-
-    // Buttons
-    const uploadDesignBtn    = document.getElementById('uploadDesignBtn');
-    const editProfileBtn     = document.getElementById('editProfileBtn');
-    const cancelUploadBtn    = document.getElementById('cancelUploadBtn');
-    const confirmUploadBtn   = document.getElementById('confirmUploadBtn');
-    const cancelEditDesignBtn= document.getElementById('cancelEditDesignBtn');
-    const saveEditDesignBtn  = document.getElementById('saveEditDesignBtn');
-    const cancelProfileBtn   = document.getElementById('cancelProfileBtn');
-    const saveProfileBtn     = document.getElementById('saveProfileBtn');
-
-   
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabs.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.dataset.tab;
-        if (tab === 'designs') {
-          designsSection.style.display = '';
-          reviewsSection.classList.remove('active');
-        } else {
-          designsSection.style.display = 'none';
-          reviewsSection.classList.add('active');
-        }
-      });
-    });
-
-   
-    function openPopup(p) { p.classList.add('active'); }
-    function closePopup(p) { p.classList.remove('active'); }
-
-    uploadDesignBtn.addEventListener('click', () => openPopup(uploadPopup));
-    editProfileBtn.addEventListener('click', () => openPopup(editProfilePopup));
-
-    cancelUploadBtn.addEventListener('click', () => closePopup(uploadPopup));
-    cancelEditDesignBtn.addEventListener('click', () => closePopup(editDesignPopup));
-    cancelProfileBtn.addEventListener('click', () => closePopup(editProfilePopup));
-
-    
-    [uploadPopup, editDesignPopup, editProfilePopup].forEach(p => {
-      p.addEventListener('click', (e) => {
-        if (e.target === p) closePopup(p);
-      });
-    });
-
   
-    function deleteDesign(id) {
-      fetch('deleteDesign.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'designID=' + encodeURIComponent(id)
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          const card = document.getElementById('post-' + id);
-          if (card) card.remove();
-        }
+  <script src="../js/sidebar.js"></script>
+
+  <script>
     
-      })
-      .catch(console.error);
+    function escapeJS(str) {
+      return str.replace(/'/g, "\\'");
     }
 
-   
+    /* Popup Controls */
+    function openPopup(p) { p.classList.add("active"); }
+    function closePopup(p) { p.classList.remove("active"); }
+
+    const uploadPopup = document.getElementById("uploadPopup");
+    const editDesignPopup = document.getElementById("editDesignPopup");
+    const editProfilePopup = document.getElementById("editProfilePopup");
+
+    document.getElementById("uploadDesignBtn").onclick = () => openPopup(uploadPopup);
+    document.getElementById("editProfileBtn").onclick = () => openPopup(editProfilePopup);
+
+    
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (btn.dataset.tab === "designs") {
+          document.getElementById("designsSection").style.display = "";
+          document.getElementById("reviewsSection").classList.remove("active");
+        } else {
+          document.getElementById("designsSection").style.display = "none";
+          document.getElementById("reviewsSection").classList.add("active");
+        }
+      });
+    });
+
+    
+    function deleteDesign(id) {
+      fetch("deleteDesign.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "designID=" + id
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          document.getElementById("post-" + id).remove();
+        }
+      });
+    }
+
+    
     function openEditDesign(id, title, desc) {
-      document.getElementById('editDesignID').value = id;
-      document.getElementById('editTitle').value = title;
-      document.getElementById('editDesc').value = desc;
+      document.getElementById("editDesignID").value = id;
+      document.getElementById("editTitle").value = title;
+      document.getElementById("editDesc").value = desc;
       openPopup(editDesignPopup);
     }
 
+    document.getElementById("saveEditDesignBtn").onclick = () => {
+      const id = document.getElementById("editDesignID").value;
+      const title = document.getElementById("editTitle").value;
+      const desc = document.getElementById("editDesc").value;
 
-    saveEditDesignBtn.addEventListener('click', () => {
-      const id    = document.getElementById('editDesignID').value;
-      const title = document.getElementById('editTitle').value.trim();
-      const desc  = document.getElementById('editDesc').value.trim();
-
-      if (!title || !desc) {
-       
-        alert('Please fill both title and description.');
-        return;
-      }
-
-      const body = `designID=${encodeURIComponent(id)}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(desc)}`;
-
-      fetch('editDesign.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
+      fetch("editDesign.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "designID=" + id + "&title=" + encodeURIComponent(title) + "&description=" + encodeURIComponent(desc)
       })
       .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          const card = document.getElementById('post-' + id);
-          if (card) {
-            const t = card.querySelector('.post-title');
-            const d = card.querySelector('.post-desc');
-            if (t) t.textContent = title;
-            if (d) d.textContent = desc;
-          }
+      .then(res => {
+        if (res.success) {
+          const card = document.getElementById("post-" + id);
+          card.querySelector(".post-title").textContent = title;
+          card.querySelector(".post-desc").textContent = desc;
           closePopup(editDesignPopup);
         }
-      })
-      .catch(console.error);
-    });
+      });
+    };
 
-    confirmUploadBtn.addEventListener('click', () => {
-      const title = document.getElementById('uploadTitle').value.trim();
-      const desc  = document.getElementById('uploadDesc').value.trim();
-      const file  = document.getElementById('uploadImage').files[0];
+    
+    document.getElementById("confirmUploadBtn").onclick = () => {
+      const title = document.getElementById("uploadTitle").value.trim();
+      const desc  = document.getElementById("uploadDesc").value.trim();
+      const file  = document.getElementById("uploadImage").files[0];
 
       if (!title || !desc || !file) {
-        alert('Please fill title, description and select an image.');
+        alert("Fill all fields.");
         return;
       }
 
       const form = new FormData();
-      form.append('title', title);
-      form.append('description', desc);
-      form.append('image', file);
+      form.append("title", title);
+      form.append("description", desc);
+      form.append("image", file);
 
-      fetch('uploadDesign.php', {
-        method: 'POST',
-        body: form
-      })
+      fetch("uploadDesign.php", { method: "POST", body: form })
       .then(r => r.json())
-      .then(data => {
-        if (data.success && data.design) {
-          const d = data.design;
-         
-          const article = document.createElement('article');
-          article.className = 'post-card';
-          article.id = 'post-' + d.designID;
+      .then(res => {
+        if (res.success) {
+          const d = res.design;
+
+          const safeTitle = escapeJS(d.title);
+          const safeDesc = escapeJS(d.description);
+
+          const article = document.createElement("article");
+          article.className = "post-card";
+          article.id = "post-" + d.designID;
+
           article.innerHTML = `
             <div class="post-controls">
-              <button class="icon-btn edit" type="button"
-                onclick="openEditDesign(${d.designID}, ${JSON.stringify(d.title)}, ${JSON.stringify(d.description)})"
-                aria-label="Edit design">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
-                  <path d="M20.71 7.04l-2.34-2.34a1 1 0 0 0-1.41 0L15.13 6.53l3.75 3.75 2.41-2.41a1 1 0 0 0 0-1.41z"/>
-                </svg>
+              <button class="icon-btn edit"
+                onclick="openEditDesign(${d.designID}, '${safeTitle}', '${safeDesc}')">
+                ✎
               </button>
-              <button class="icon-btn delete" type="button"
-                onclick="deleteDesign(${d.designID})"
-                aria-label="Delete design">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-              </button>
+              <button class="icon-btn delete"
+                onclick="deleteDesign(${d.designID})">🗑</button>
             </div>
-            <img src="${d.imageUrl}" alt="${d.title}">
+
+            <img src="${d.imageUrl}">
             <div class="post-title">${d.title}</div>
             <div class="post-desc">${d.description}</div>
             <div class="post-meta">Uploaded on ${d.uploadDate}</div>
           `;
-          postsContainer.prepend(article);
 
-          document.getElementById('uploadTitle').value = '';
-          document.getElementById('uploadDesc').value = '';
-          document.getElementById('uploadImage').value = '';
+          document.getElementById("postsContainer").prepend(article);
+
           closePopup(uploadPopup);
         }
-      })
-      .catch(console.error);
-    });
+      });
+    };
 
- 
-    saveProfileBtn.addEventListener('click', () => {
-      const specialty = document.getElementById('newSpecialty').value.trim();
-      const bio       = document.getElementById('newBio').value.trim();
-      const pic       = document.getElementById('newProfilePic').files[0];
+    
+    document.getElementById("saveProfileBtn").onclick = () => {
+      const specialty = document.getElementById("newSpecialty").value;
+      const bio = document.getElementById("newBio").value;
+      const pic = document.getElementById("newProfilePic").files[0];
 
       const form = new FormData();
-      form.append('specialty', specialty);
-      form.append('bio', bio);
-      if (pic) form.append('image', pic);
+      form.append("specialty", specialty);
+      form.append("bio", bio);
+      if (pic) form.append("image", pic);
 
-      fetch('saveProfile.php', {
-        method: 'POST',
-        body: form
-      })
+      fetch("saveProfile.php", { method: "POST", body: form })
       .then(r => r.json())
-      .then(data => {
-        if (data.success && data.profile) {
-          const p = data.profile;
-          document.getElementById('designerName').textContent      = p.name;
-          document.getElementById('designerSpecialty').textContent = p.specialty;
-          document.getElementById('designerBio').textContent       = p.bio;
-          if (p.profilePictureUrl) {
-            document.getElementById('designerLogo').src = p.profilePictureUrl;
-          }
-          if (typeof p.reviewsCount !== 'undefined') {
-            document.getElementById('reviewsCount').textContent = p.reviewsCount;
+      .then(res => {
+        if (res.success) {
+          document.getElementById("designerSpecialty").textContent = res.profile.specialty;
+          document.getElementById("designerBio").textContent = res.profile.bio;
+          if (res.profile.profilePictureUrl) {
+            document.getElementById("designerLogo").src = res.profile.profilePictureUrl;
           }
           closePopup(editProfilePopup);
         }
-      })
-      .catch(console.error);
-    });
+      });
+    };
   </script>
+
 </body>
 </html>
