@@ -1,96 +1,57 @@
 <?php
-// ===================================
-// إعدادات الاتصال بقاعدة البيانات
-// ===================================
-$DB_HOST = 'localhost';
-$DB_USER = 'root'; 
-$DB_PASS = 'root';     
-$DB_NAME = 'decoria';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// إنشاء الاتصال
-$conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-
-// التحقق من الاتصال
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// لضمان دعم اللغة العربية بشكل صحيح
-$conn->set_charset("utf8mb4");
+require_once "config.php";
 
 
-// ===================================
-// إدارة الجلسات والتحقق من تسجيل الدخول
-// ===================================
-session_start();
-
-function redirect_to($location) {
-    header("Location: $location");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit();
 }
 
-/**
- * التحقق من تسجيل الدخول والدور المطلوب
- */
-function check_login($role_required = '') {
-    if (!isset($_SESSION['userID'])) {
-        redirect_to('login.php');
-    }
-    
-    if ($role_required && (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)) {
-        redirect_to('home.html');
-    }
-}
+$clientID = $_SESSION['user_id'];
 
-// التحقق من تسجيل دخول العميل
-check_login('Customer'); 
 
-// جلب قائمة المصممين لملء القائمة المنسدلة
-$designers_query = "SELECT designerID, name, specialty FROM designer JOIN user ON designerID = userID";
+$designers_query = "
+SELECT d.designerID, u.name, d.specialty
+FROM designer d 
+JOIN user u ON u.userID = d.designerID
+";
 $designers_result = $conn->query($designers_query);
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DECORIA | Meeting</title>
-
   <link rel="stylesheet" href="../css/decoria.css" />
   <link rel="stylesheet" href="../css/meeting.css" />
 </head>
+
 <body>
 
-  <header class="site-header">
+<header class="site-header">
     <div class="container header-container">
       <div class="brand">
-        <img src="../photo/Logo.png.png" alt="DECORIA Logo" class="logo">
+        <img src="../photo/Logo.png.png" class="logo">
       </div>
-
       <p class="welcome-text">Schedule Your Meeting</p>
-
       <div class="header-buttons">
         <button class="menu-toggle" id="openSidebar">☰</button>
       </div>
     </div>
-  </header>
+</header>
 
-   <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
-    <a href="home.html">Home</a>
-    <a href="designers.php">Designers</a>
-    <a href="booking.php" class="active">Booking</a>
-    <a href="timeline.php">Timeline</a>
-    <a href="meeting.php">Meeting</a>
-    <a href="settings.php">Settings</a>
-    <hr>
-    <a href="login.php" class="logout">Logout</a>
-  </div>
+     <?php include("menu.php"); ?>
+</div>
 
-  <div id="overlay"></div>
+<div id="overlay"></div>
 
-  <main class="container">
+<main class="container">
     <h2 class="section-title">Online Meeting</h2>
 
     <div class="meeting-container">
@@ -100,7 +61,7 @@ $designers_result = $conn->query($designers_query);
 
       <div class="meeting-content">
         <p class="meeting-description">
-          Schedule a meeting with one of our designers via Zoom to discuss your project details, share ideas, and ensure your vision is perfectly understood.
+          Schedule a meeting with one of our designers via Zoom to discuss your project details.
         </p>
 
         <form class="meeting-form" method="POST" action="process_meeting.php">
@@ -109,7 +70,7 @@ $designers_result = $conn->query($designers_query);
           <select id="designer" name="designerID" required>
             <option value="">Choose...</option>
             <?php 
-            if ($designers_result->num_rows > 0) {
+            if ($designers_result && $designers_result->num_rows > 0) {
                 while($row = $designers_result->fetch_assoc()) {
                     echo "<option value='{$row['designerID']}'>{$row['name']} ({$row['specialty']})</option>";
                 }
@@ -124,39 +85,43 @@ $designers_result = $conn->query($designers_query);
           <input type="time" id="time" name="time" required>
 
           <label for="notes">Additional Notes</label>
-          <textarea id="notes" name="note" rows="4" placeholder="Add any specific topics you’d like to discuss..."></textarea>
+          <textarea id="notes" name="note" rows="4"></textarea>
+          
+          <!-- Payment Section -->
+<div class="form-group">
+    <label style="font-weight:bold;">Payment Method</label>
 
-          <div class="form-buttons">
-            <button type="submit">Book Meeting</button>
-          </div>
+    <div style="margin-top:8px; display:flex; align-items:center; gap:15px;">
+
+        <!-- Apple Pay option -->
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="radio" name="paymentMethod" value="Apple Pay" required>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_Pay_logo.svg" 
+                 alt="Apple Pay" style="height:22px;">
+        </label>
+
+        <!-- Price -->
+        <span style="font-size:16px; font-weight:bold; color:#3b4d3b;">
+            Price: 350 SAR
+        </span>
+
+    </div>
+</div>
+
+          <button  class="form-buttonsbutton"type="submit">Book Meeting</button>
         </form>
-        <div id="meetingInfo" class="meeting-message" style="display:none;">
-          <p><strong>Name:</strong> <span id="meetingName"></span></p>
-          <p><strong>Date:</strong> <span id="meetingDate"></span></p>
-          <p><strong>Time:</strong> <span id="meetingTime"></span></p>
-          <p><strong>Zoom Link:</strong> <a href="#" target="_blank" id="zoomLink">Join Meeting</a></p>
-          <div class="btn-row">
-            <button type="submit">Edit</button>
-            <button type="submit">Cancel</button>
-          </div>
-        </div>
+
       </div>
     </div>
-  </main>
+</main>
 
-  <footer>
+<footer>
     <div class="footer-content">
-      <p class="footer-text">
-        © 2025 DECORIA — All rights reserved
-        | <a href="terms.html">Terms & Conditions</a>
-      </p>
-      <img src="../photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
+      <p class="footer-text">© 2025 DECORIA — All rights reserved</p>
+      <img src="../photo/darlfooter.jpeg" class="footer-image">
     </div>
-  </footer>
+</footer>
 
-  <script src="../js/sidebar.js"></script>
-  <script src="../js/designerInfo.js"></script>
-  <script src="../js/meeting.js"></script>
+<script src="../js/sidebar.js"></script>
 </body>
 </html>
-<?php $conn->close(); ?>
