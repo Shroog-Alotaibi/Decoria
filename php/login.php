@@ -1,7 +1,8 @@
 <?php
 session_start();
 
-$conn = new mysqli("localhost", "root", "root", "decoria", 8889);
+
+$conn = new mysqli("localhost", "root", "root", "decoria");
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -10,6 +11,7 @@ if ($conn->connect_error) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -31,15 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($row = $result->fetch_assoc()) {
 
-              
+                
                 if (md5($password) === $row['password']) {
 
-                 
+                    
                     $_SESSION['user_id'] = (int)$row['userID'];
                     $_SESSION['name']    = $row['name'];
                     $_SESSION['role']    = $row['role'];
 
-                    header('Location: ../html/home.php');
+                    
+                    $_SESSION['username'] = $row['name'];
+
+                    
+                    header('Location: ../php/home.php');
                     exit();
 
                 } else {
