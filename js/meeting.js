@@ -1,4 +1,4 @@
-// js/meeting.js
+
 (function(){
   'use strict';
 
@@ -49,5 +49,5 @@
     }
 
 
-  }); // DOMContentLoaded
+  }); 
 })();
