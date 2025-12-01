@@ -8,7 +8,7 @@
       const terms = document.getElementById('terms').checked;
       const message = document.getElementById('message');
 
-      // Clear all error messages first
+      
       document.getElementById('emailError').textContent = '';
       document.getElementById('phoneError').textContent = '';
       document.getElementById('passwordError').textContent = '';
