@@ -27,14 +27,15 @@ if (!$res) {
 
 $imagePath = '../' . $res['image'];
 
+
 $sql  = "DELETE FROM design WHERE designID = ? AND designerID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("dd", $designID, $designerID);
 $stmt->execute();
+
 
 if (is_file($imagePath)) {
     @unlink($imagePath);
 }
 
 echo json_encode(['success' => true]);
-
