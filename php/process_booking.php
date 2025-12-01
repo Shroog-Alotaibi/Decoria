@@ -4,9 +4,7 @@ ini_set('display_errors', 1);
 
 require_once "config.php"; 
 
-// ===================================
-// Session check
-// ===================================
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -17,9 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
-// ===================================
-// 1. Handle file upload
-// ===================================
+
 $transactionPhotoPath = null;
 
 if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] === UPLOAD_ERR_OK) {
@@ -29,14 +25,14 @@ if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] =
     $fileNameCmps = explode(".", $fileName);
     $fileExtension = strtolower(end($fileNameCmps));
 
-    // اسم جديد للصورة
+    
     $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
 
    
     $uploadFileDir = '../photo/uploads';
 
 
-    // لازم تتأكدين أن مجلد uploads موجود داخل: php/
+    
     $destPath = $uploadFileDir . $newFileName;
 
     if (move_uploaded_file($fileTmpPath, $destPath)) {
@@ -49,9 +45,7 @@ if (isset($_FILES['transactionPhoto']) && $_FILES['transactionPhoto']['error'] =
     die("Transaction photo is required.");
 }
 
-// ===================================
-// 2. Extract data
-// ===================================
+
 $clientID   = $_SESSION['user_id'];
 $designerID = $conn->real_escape_string($_POST['designerID']);
 $designID   = $conn->real_escape_string($_POST['designID']); // ← تمت إضافتها
@@ -60,9 +54,7 @@ $time       = $conn->real_escape_string($_POST['time']);
 $status     = 'Request';
 $price      = 10000;
 
-// ===================================
-// 3. Insert Booking
-// ===================================
+
 $sql_insert = "
 INSERT INTO booking (clientID, designerID, designID, date, time, status, price, receipt)
 VALUES ('$clientID', '$designerID', '$designID', '$date', '$time', '$status', '$price', '$transactionPhotoPath')
@@ -99,16 +91,16 @@ if ($conn->query($sql_insert) === TRUE) {
             <p><strong>Date:</strong> $date</p>
             <p><strong>Status:</strong> $status (Transaction photo under review)</p>
             <p style='margin-top: 20px;'>Our team will review your bank transfer photo soon.</p>
-             <!-- NEW BUTTON -->
+                  <!-- NEW BUTTON -->
     <p style='margin-top: 25px;'>
         <a href='home.php'
            style='display:inline-block; padding:10px 20px; background:#3b4d3b; 
                   color:white; text-decoration:none; border-radius:8px; font-weight:600;'>
            Go to Homepage
-        </a>
-    </p>
-            
+        </a>
+    </p>
         </div>
+  
     </body>
     </html>
     ";
@@ -117,5 +109,11 @@ if ($conn->query($sql_insert) === TRUE) {
     die("Booking error: " . $conn->error);
 }
 
+$sqlTimeline = "INSERT INTO bookingtimeline (bookingID, steps, lastUpdate)
+                VALUES (?, 'not_received', NOW())";
+
+$stmtTimeline = $conn->prepare($sqlTimeline);
+$stmtTimeline->bind_param("i", $bookingID);
+$stmtTimeline->execute();
 $conn->close();
 ?>
