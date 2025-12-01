@@ -1,11 +1,11 @@
 <?php
-require_once "../config.php";
+require_once "config.php";
 session_start();
 check_login('Designer');
 
 header('Content-Type: application/json');
 
-$designerID = $_SESSION['userID'];
+$designerID = $_SESSION['user_id'];
 
 $title = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
@@ -14,6 +14,7 @@ if ($title === '' || $description === '' || !isset($_FILES['image'])) {
     echo json_encode(['success' => false, 'error' => 'Missing fields']);
     exit;
 }
+
 
 $uploadDir = '../photo/designs/';
 if (!is_dir($uploadDir)) {
@@ -32,14 +33,14 @@ if (!in_array($ext, $allowed)) {
 
 $filename     = 'design_' . $designerID . '_' . time() . '.' . $ext;
 $targetPath   = $uploadDir . $filename;
-$relativePath = 'photo/designs/' . $filename;    
+$relativePath = 'photo/designs/' . $filename; 
 
 if (!move_uploaded_file($img['tmp_name'], $targetPath)) {
     echo json_encode(['success' => false, 'error' => 'Failed to save image']);
     exit;
 }
 
-// Insert into DB
+
 $today = date('Y-m-d');
 $sql   = "INSERT INTO design (title, description, image, designerID, uploadDate)
           VALUES (?, ?, ?, ?, ?)";
