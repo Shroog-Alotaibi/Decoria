@@ -31,7 +31,7 @@ function check_login($role_required = '') {
         $role_required !== '' &&
         (!isset($_SESSION['role']) || $_SESSION['role'] !== $role_required)
     ) {
-       
+        
         redirect_to('home.php');
     }
 }
