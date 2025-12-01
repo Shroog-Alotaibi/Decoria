@@ -1,11 +1,10 @@
-// js/designers.js — DECORIA (links to designerInfo.html?id=...)
-/* لا تغيّر الهيدر/الفوتر/الـ CSS. هذا الملف فقط يبني كروت المصممين ويضبط روابطهم. */
+
 
 const designers = [
   {
     id: "esra",
     name: "Esra Aljaser",
-    avatar: "../photo/‏EsraAljaser‏.jpeg", // ← غيّري الامتداد/الاسم إذا لزم
+    avatar: "../photo/‏EsraAljaser‏.jpeg", 
     bio: "Creative residential concepts with functional elegance.",
     styles: ["Modern", "Minimal"],
     city: "Riyadh",
@@ -61,7 +60,7 @@ const designers = [
 function card(d) {
   const tags = d.styles.map((s) => `<span class="tag">${s}</span>`).join("");
   const rating = `★ ${d.rating.toFixed(1)}`;
-  // fallback للصور لو الاسم/المسار خطأ
+  
   const onErr = "this.onerror=null;this.src='../photo/placeholder.png'";
   return `
     <article class="designer-card" data-id="${d.id}">
