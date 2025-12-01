@@ -1,97 +1,101 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$DB_HOST = 'localhost';
-$DB_USER = 'root'; 
-$DB_PASS = 'root';     
-$DB_NAME = 'decoria';
-
-$conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
+require_once "config.php";   
 
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
-$conn->set_charset("utf8mb4");
-
-
-session_start();
-
-function redirect_to($location) {
-    header("Location: $location");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit();
 }
 
 
-function check_login($role_required = '') {
-    if (!isset($_SESSION['userID'])) {
-        redirect_to('login.php');
-    }
-    
-    if ($role_required && (!isset($_SESSION['userRole']) || $_SESSION['userRole'] !== $role_required)) {
-        redirect_to('home.html');
-    }
-}
-
-
-check_login('Customer'); 
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    redirect_to('meeting.php');
+    header("Location: meeting.php");
+    exit();
 }
-$clientID = $_SESSION['userID']; 
-$designerID = $conn->real_escape_string($_POST['designerID']);
-$date = $conn->real_escape_string($_POST['date']);
-$time = $conn->real_escape_string($_POST['time']);
-$note = $conn->real_escape_string($_POST['note']);
-$status = 'Pending'; 
-$price = 350; 
 
-$sql_insert = "INSERT INTO meeting (clientID, designerID, date, time, status, note, price) 
-               VALUES ('$clientID', '$designerID', '$date', '$time', '$status', '$note', '$price')";
+
+$clientID   = $_SESSION['user_id'];   
+$designerID = $conn->real_escape_string($_POST['designerID']);
+$date       = $conn->real_escape_string($_POST['date']);
+$time       = $conn->real_escape_string($_POST['time']);
+$note       = $conn->real_escape_string($_POST['note']);
+$status     = 'Pending';
+$price      = 350;
+
+
+$sql_insert = "
+INSERT INTO meeting (clientID, designerID, date, time, status, note, price)
+VALUES ('$clientID', '$designerID', '$date', '$time', '$status', '$note', '$price')
+";
 
 if ($conn->query($sql_insert) === TRUE) {
+
     $meetingID = $conn->insert_id;
 
-  
-    $sql_zoom = "SELECT u.name AS designerName, d.zoomLink FROM designer d 
-                 JOIN user u ON d.designerID = u.userID 
-                 WHERE d.designerID = '$designerID'";
-    $result_zoom = $conn->query($sql_zoom);
-    $zoom_data = $result_zoom->fetch_assoc();
-    $zoomLink = $zoom_data['zoomLink'] ?? '#';
-
    
-    echo "
-        <!DOCTYPE html>
-        <html lang='en' dir='rtl'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Meeting Confirmed</title>
-            <link rel='stylesheet' href='../css/decoria.css'>
-            <style>
-                .message-box { max-width: 600px; margin: 50px auto; padding: 30px; border: 1px solid #d8d3c5; border-radius: 8px; background-color: #f8f5ee; text-align: center; }
-                .message-box h1 { color: #3b4d3b; }
-            </style>
-        </head>
-        <body>
-            <div class='message-box'>
-                <h1>✅ The meeting has been successfully booked!</h1>
-                <p><strong>Designer:</strong> {$zoom_data['designerName']}</p>
-                <p><strong>Date:</strong> $date</p>
-                <p><strong>Time:</strong> $time</p>
-                <p><strong>Zoom Link:</strong> <a href='{$zoomLink}' target='_blank' style='color:#3b4d3b; font-weight:bold;'>Join the meeting now</a></p>
-                <p style='margin-top: 20px;'><a href='meeting.php' class='primary-btn'>Book another meeting</a></p>
-            </div>
-        </body>
-        </html>
+    $sql_zoom = "
+        SELECT u.name AS designerName, d.zoomLink
+        FROM designer d
+        JOIN user u ON d.designerID = u.userID
+        WHERE d.designerID = '$designerID'
     ";
 
-} else {
+    $result_zoom = $conn->query($sql_zoom);
+    $zoom_data   = $result_zoom->fetch_assoc();
 
-    die("An error occurred while booking: " . $conn->error);
+    $designerName = $zoom_data['designerName'] ?? 'Unknown';
+    $zoomLink     = $zoom_data['zoomLink'] ?? '#';
+
+
+    echo "
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Meeting Confirmed</title>
+        <link rel='stylesheet' href='../css/decoria.css'>
+        <style>
+            .message-box {
+                max-width: 600px; margin: 50px auto; padding: 30px;
+                border: 1px solid #d8d3c5; border-radius: 8px;
+                background-color: #f8f5ee; text-align: center;
+            }
+            .message-box h1 { color: #3b4d3b; }
+            a.primary-btn {
+                display:inline-block; padding:10px 20px;
+                background:#3b4d3b; color:white; border-radius:6px;
+                text-decoration:none; margin-top:20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class='message-box'>
+            <h1>✅ The meeting has been successfully booked!</h1>
+            <p><strong>Designer:</strong> $designerName</p>
+            <p><strong>Date:</strong> $date</p>
+            <p><strong>Time:</strong> $time</p>
+            <p><strong>Zoom Link:</strong> 
+                <a href='$zoomLink' target='_blank' style='color:#3b4d3b; font-weight:bold;'>Join Meeting</a>
+            </p>
+      <!-- NEW BUTTON -->
+    <p style='margin-top: 25px;'>
+        <a href='home.php'
+           style='display:inline-block; padding:10px 20px; background:#3b4d3b; 
+                  color:white; text-decoration:none; border-radius:8px; font-weight:600;'>
+           Go to Homepage
+        </a>
+    </p>
+            <a href='meeting.php' class='primary-btn'>Book another meeting</a>
+        </div>
+    </body>
+    </html>";
+    
+} else {
+    die("Error while booking: " . $conn->error);
 }
 
 $conn->close();
