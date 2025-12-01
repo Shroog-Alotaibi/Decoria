@@ -1,38 +1,67 @@
 <?php
-require_once "../php/config.php"; 
+require_once "config.php";
+session_start();
 check_login("Designer");
 
+$designerID = $_SESSION['user_id'];
+
 if (!isset($_POST['bookingID'], $_POST['status'])) {
-    http_response_code(400);
-    exit("Missing parameters");
+    die("missing");
 }
 
 $bookingID = intval($_POST['bookingID']);
-$status = $_POST['status'];
+$status    = $_POST['status'];
 
-// Prevent designers from setting "not_received"
-if ($status === "not_received") {
-    http_response_code(403);
-    exit("Not allowed");
+
+$validSteps = ["received", "in_progress", "completed"];
+if (!in_array($status, $validSteps)) {
+    die("invalid");
 }
 
-// Ensure designer owns this booking
-$sql = "SELECT bookingID FROM booking WHERE bookingID = ? AND designerID = ?";
+
+$sql = "SELECT designerID FROM booking WHERE bookingID = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $bookingID, $_SESSION['user_id']);
+$stmt->bind_param("i", $bookingID);
 $stmt->execute();
-$check = $stmt->get_result();
+$result = $stmt->get_result()->fetch_assoc();
 
-if ($check->num_rows === 0) {
-    http_response_code(403);
-    exit("Unauthorized");
+if (!$result || $result['designerID'] != $designerID) {
+    die("unauthorized");
 }
 
-// Update timeline
-$sql2 = "UPDATE bookingtimeline SET steps = ? WHERE bookingID = ?";
-$stmt2 = $conn->prepare($sql2);
-$stmt2->bind_param("si", $status, $bookingID);
-$stmt2->execute();
 
-// Success
-echo "OK";
+$sql = "UPDATE bookingtimeline 
+        SET steps = ?, lastUpdate = NOW()
+        WHERE bookingID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("si", $status, $bookingID);
+$stmt->execute();
+
+
+
+$bookingStatus = "";
+
+switch ($status) {
+    case "received":
+        
+        $bookingStatus = "Request";
+        break;
+
+    case "in_progress":
+        $bookingStatus = "In Progress";
+        break;
+
+    case "completed":
+        $bookingStatus = "Completed";
+        break;
+}
+
+
+$sql = "UPDATE booking SET status = ? WHERE bookingID = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("si", $bookingStatus, $bookingID);
+$stmt->execute();
+
+echo "success";
+exit;
+?>
