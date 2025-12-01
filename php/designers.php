@@ -2,7 +2,7 @@
 
 $host     = 'localhost';
 $user     = 'root';
-$password = 'root';  
+$password = 'root';    
 $dbname   = 'decoria';
 
 
@@ -10,6 +10,7 @@ $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 
 $sql = "
     SELECT 
@@ -68,14 +69,7 @@ $ratingMap = [
   <!-- Sidebar Menu -->
   <div class="sidebar" id="sidebar">
     <span class="close-btn" id="closeSidebar">&times;</span>
-    <a href="home.php">Home</a>
-    <a href="designers.php" class="active">Designers</a>
-    <a href="booking.php">Booking</a>
-    <a href="timeline.php">Timeline</a>
-    <a href="meeting.php">Meeting</a>
-    <a href="settings.php">Settings</a>
-    <hr>
-    <a href="login.php" class="logout">Logout</a>
+    <?php include("menu.php"); ?>
   </div>
 
   <div id="overlay"></div>
@@ -84,19 +78,19 @@ $ratingMap = [
   <main class="container">
     <h2 class="section-title">Interior Designers</h2>
 
-    <!-- مربع البحث -->
+    
     <div class="filters">
       <input id="q" class="search" placeholder="Search for a designer...">
     </div>
 
-    <!-- الكروت -->
+    
     <div id="grid" class="designers-grid">
       <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($row = $result->fetch_assoc()): ?>
           <?php
             $name = htmlspecialchars($row['name']);
 
-            // نطلع المدينة من العنوان (قبل أول -)
+            
             $addr = $row['address'] ?? '';
             $city = $addr;
             if (strpos($addr, '-') !== false) {
@@ -107,15 +101,15 @@ $ratingMap = [
 
             $bio = htmlspecialchars($row['bio']);
 
-            // مسار الصورة: نخليه ../ + اللي في الجدول
+            
             $avatar = '../' . ltrim($row['profilePicture'], '/');
             $avatar = htmlspecialchars($avatar);
 
-            // التخصصات tags من specialty
+            
             $specialty = $row['specialty'] ?? '';
             $styles = array_filter(array_map('trim', explode(',', $specialty)));
 
-            // التقييم
+            
             $ratingValue = $ratingMap[$row['name']] ?? 4.5;
             $ratingText  = '★ ' . number_format($ratingValue, 1);
 
@@ -156,7 +150,7 @@ $ratingMap = [
     <div class="footer-content">
       <p class="footer-text">
         © 2025 DECORIA — All rights reserved
-        | <a href="terms.html">Terms & Conditions</a>
+        | <a href="terms.php">Terms & Conditions</a>
       </p>
       <img src="../photo/darlfooter.jpeg" alt="DECORIA Footer Image" class="footer-image">
     </div>
