@@ -1,10 +1,10 @@
-/* Helpers */
+
 const $ = (s, r=document)=>r.querySelector(s);
 const byId = id => document.getElementById(id)||null;
 
-/* بيانات مبدئية للعرض */
+
 const ORDERS = [
-  // Current
+  
   {
     id: "ord-2025-001",
     status: "current",
@@ -24,7 +24,7 @@ const ORDERS = [
     image: "../photo/LivingRoom.jpg"
   },
 
-  // History
+  
   {
     id: "ord-2025-000",
     status: "history",
@@ -36,13 +36,13 @@ const ORDERS = [
   }
 ];
 
-/* كرت الطلب */
+
 function orderCard(o){
   const badgeClass = o.status === "current"
     ? "badge-current"
     : (o.status === "canceled" ? "badge-canceled" : "badge-history");
 
-  // ✅ عرض نص أوضح في الشارة بدون تغيير الحالة الداخلية
+  
   const statusLabel = o.status === "current"
     ? "Current"
     : (o.status === "canceled" ? "Canceled" : "Past");
@@ -76,13 +76,13 @@ function orderCard(o){
   `;
 }
 
-/* ريندر القوائم */
+
 function renderLists(){
   const curr = ORDERS.filter(o=>o.status==="current");
   const hist = ORDERS.filter(o=>o.status==="history" || o.status==="canceled");
 
   const currHost = byId("currentSection");
-  const histHost = byId("pastSection");   // ←← هنا التعديل الوحيد (كان historySection)
+  const histHost = byId("pastSection");   
 
   if (currHost) currHost.innerHTML = curr.length ? curr.map(orderCard).join("") : `<p>No current orders.</p>`;
   if (histHost) histHost.innerHTML = hist.length ? hist.map(orderCard).join("") : `<p>No previous orders.</p>`;
@@ -90,7 +90,7 @@ function renderLists(){
   bindCancel();
 }
 
-/* إلغاء */
+
 function bindCancel(){
   document.querySelectorAll("[data-cancel]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -105,7 +105,7 @@ function bindCancel(){
   });
 }
 
-/* تبديل التبويب */
+
 function showTab(which){
   const currentSection = byId("currentSection");
   const pastSection    = byId("pastSection");
@@ -131,7 +131,7 @@ function showTab(which){
   }
 }
 
-/* Boot */
+
 document.addEventListener("DOMContentLoaded", ()=>{
   renderLists();
   showTab("current");
